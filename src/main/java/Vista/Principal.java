@@ -4,6 +4,8 @@ package Vista;
 import Modelo.Producto;
 import Modelo.Conexion;
 import Modelo.MarcaItem;
+import Modelo.MaterialItem;
+import Modelo.ColorItem;
 import Modelo.Usuario;
 import java.awt.Color;
 import java.util.List;
@@ -21,16 +23,17 @@ public class Principal extends javax.swing.JFrame {
     DescripcionTxT.setText("");
     PrecioTxT.setText("");
     CantidadTxT.setText("");
-    MaterialTxT.setText("");
+    //MaterialTxT.setText("");
     //MarcaComboBOx.;
     NombTxT.setText("");
-    ColorTxT.setText("");
+    //ColorTxT.setText("");
 }
     
-        private void cargarDatosComboBoxes() {
+        private void cargarDatosComboBoxes()
+        {
         cargarMarcas();
-        //cargarMateriales(); // Llama si implementas el combo de material
-        //cargarColores();    // Llama si implementas el combo de color
+        cargarMateriales(); // Llama si implementas el combo de material
+        cargarColores();    // Llama si implementas el combo de color
     }
     
     
@@ -56,7 +59,52 @@ public class Principal extends javax.swing.JFrame {
         // Asignar el modelo al JComboBox
         MarcaComboBox.setModel(model);
     }
+     
+     private void cargarMateriales() {
+        // Obtener la lista de materiales desde la clase Conexion
+        List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+
+        // Crear el modelo para el ComboBox
+        DefaultComboBoxModel<MaterialItem> model2 = new DefaultComboBoxModel<>();
+
+        if (materiales == null || materiales.isEmpty()) {
+            System.out.println("No se encontraron marcas.");
+            // Opcional: añadir un item placeholder o deshabilitar
+            // model.addElement(new MarcaItem(0, "-- Sin Marcas --"));
+            // marcaComboBox.setEnabled(false);
+        } else {
+            // Llenar el modelo con los objetos MarcaItem
+            for (MaterialItem item2 : materiales) {
+                model2.addElement(item2);
+            }
+             MaterialComboBox.setEnabled(true);
+        }
+        // Asignar el modelo al JComboBox
+        MaterialComboBox.setModel(model2);
+    } 
     
+     private void cargarColores() {
+        // Obtener la lista de colores desde la clase Conexion
+        List<ColorItem> colores = conexion.obtenerTodosLosColores();
+
+        // Crear el modelo para el ComboBox
+        DefaultComboBoxModel<ColorItem> model3 = new DefaultComboBoxModel<>();
+
+        if (colores == null || colores.isEmpty()) {
+            System.out.println("No se encontraron marcas.");
+            // Opcional: añadir un item placeholder o deshabilitar
+            // model.addElement(new MarcaItem(0, "-- Sin Marcas --"));
+            // marcaComboBox.setEnabled(false);
+        } else {
+            // Llenar el modelo con los objetos MarcaItem
+            for (ColorItem item3 : colores) {
+                model3.addElement(item3);
+            }
+             ColorComboBox.setEnabled(true);
+        }
+        // Asignar el modelo al JComboBox
+        ColorComboBox.setModel(model3);
+    } 
 private void cargarProductosEnTabla() {
     DefaultTableModel modeloTabla = (DefaultTableModel) ProductosTbld.getModel();
     modeloTabla.setRowCount(0); // Limpiar la tabla
@@ -184,14 +232,14 @@ private void llenarTablaUsuarios() {
         jLabel2 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        MaterialTxT = new javax.swing.JTextField();
         NombTxT = new javax.swing.JTextField();
-        ColorTxT = new javax.swing.JTextField();
         RegistrarBtn = new javax.swing.JButton();
         ConsultarBtn = new javax.swing.JButton();
         EliminarBtn = new javax.swing.JButton();
         ModificarBtn = new javax.swing.JButton();
         MarcaComboBox = new javax.swing.JComboBox<MarcaItem>();
+        MaterialComboBox = new javax.swing.JComboBox<>();
+        ColorComboBox = new javax.swing.JComboBox<>();
         Reparaciones = new javax.swing.JPanel();
         Venntas = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -792,16 +840,7 @@ private void llenarTablaUsuarios() {
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
         jLabel6.setText("Color");
 
-        MaterialTxT.setBackground(new java.awt.Color(207, 128, 38));
-
         NombTxT.setBackground(new java.awt.Color(207, 128, 38));
-
-        ColorTxT.setBackground(new java.awt.Color(207, 128, 38));
-        ColorTxT.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                ColorTxTActionPerformed(evt);
-            }
-        });
 
         RegistrarBtn.setBackground(new java.awt.Color(117, 80, 72));
         RegistrarBtn.setForeground(new java.awt.Color(255, 255, 255));
@@ -839,29 +878,26 @@ private void llenarTablaUsuarios() {
             }
         });
 
+        MarcaComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MarcaComboBoxActionPerformed(evt);
+            }
+        });
+
+        MaterialComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MaterialComboBoxActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ProductosLayout = new javax.swing.GroupLayout(Productos);
         Productos.setLayout(ProductosLayout);
         ProductosLayout.setHorizontalGroup(
             ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(ProductosLayout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(ProductosLayout.createSequentialGroup()
-                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(ProductosLayout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                            .addGroup(ProductosLayout.createSequentialGroup()
-                                .addGap(15, 15, 15)
-                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(MaterialTxT)
-                            .addComponent(ColorTxT)
-                            .addComponent(MarcaComboBox, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                    .addGroup(ProductosLayout.createSequentialGroup()
-                        .addContainerGap()
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(ProductosLayout.createSequentialGroup()
                                 .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -895,8 +931,31 @@ private void llenarTablaUsuarios() {
                             .addGroup(ProductosLayout.createSequentialGroup()
                                 .addComponent(Cantidad)
                                 .addGap(12, 12, 12)
-                                .addComponent(CantidadTxT)))))
-                .addGap(18, 18, 18)
+                                .addComponent(CantidadTxT)))
+                        .addGap(18, 18, 18))
+                    .addGroup(ProductosLayout.createSequentialGroup()
+                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 51, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addGap(9, 9, 9)
+                                .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addGap(6, 6, 6)
+                                .addComponent(MaterialComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ProductosLayout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ColorComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGap(18, 18, 18))
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addGap(12, 12, 12)
+                                .addComponent(MarcaComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))))
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -923,8 +982,8 @@ private void llenarTablaUsuarios() {
                             .addComponent(Cantidad))
                         .addGap(18, 18, 18)
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
+                            .addComponent(jLabel1)
+                            .addComponent(MaterialComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
@@ -935,20 +994,20 @@ private void llenarTablaUsuarios() {
                             .addComponent(DescripcionTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel6))
+                            .addComponent(jLabel6)
+                            .addComponent(ColorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(28, 28, 28)
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(RegistrarBtn)
                             .addComponent(ConsultarBtn))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 35, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(ModificarBtn)
                             .addComponent(EliminarBtn)))
                     .addGroup(ProductosLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(41, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
 
         Tabla.addTab("tab3", Productos);
@@ -1336,10 +1395,10 @@ private void llenarTablaUsuarios() {
         DescripcionTxT.setText(producto.getDescripcion());
         PrecioTxT.setText(String.valueOf(producto.getPrecio()));
         CantidadTxT.setText(String.valueOf(producto.getCantidad()));
-        MaterialTxT.setText(String.valueOf(producto.getMaterial())); // corregido
+        //MaterialComboBox.setText(String.valueOf(producto.getMaterial())); // corregido
         //MarcaComboBox.se(String.valueOf(producto.getMarca()));       // corregido
         NombTxT.setText(producto.getNombre());
-        ColorTxT.setText(String.valueOf(producto.getColor()));
+        //ColorComboBox.setText(String.valueOf(producto.getColor()));
     } else {
         JOptionPane.showMessageDialog(this, "Producto no encontrado", "Información", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -1351,14 +1410,14 @@ private void llenarTablaUsuarios() {
     String descripcion = DescripcionTxT.getText();
     String precio = PrecioTxT.getText();
     String cantidad = CantidadTxT.getText();
-    String material = MaterialTxT.getText();
     String nombre = NombTxT.getText();
-    String color = ColorTxT.getText();
     
     Object selectedMarcaObj = MarcaComboBox.getSelectedItem();
+    Object selectedMaterialObj = MaterialComboBox.getSelectedItem();
+    Object selectedColorObj = ColorComboBox.getSelectedItem();
 
     // Verificar que todos los campos estén llenos
-    if (codigo.isEmpty() || descripcion.isEmpty() || precio.isEmpty() || cantidad.isEmpty() || material.isEmpty() || selectedMarcaObj.toString().isEmpty() || nombre.isEmpty() || color.isEmpty()) {
+    if (codigo.isEmpty() || descripcion.isEmpty() || precio.isEmpty() || cantidad.isEmpty() || selectedMaterialObj.toString().isEmpty() || selectedMarcaObj.toString().isEmpty() || nombre.isEmpty() || selectedColorObj.toString().isEmpty()) {
         JOptionPane.showMessageDialog(this, "Rellenar todos los campos", "Advertencia", JOptionPane.WARNING_MESSAGE);
         return;
     }
@@ -1366,13 +1425,15 @@ private void llenarTablaUsuarios() {
     try {
         
         MarcaItem idItem = (MarcaItem) selectedMarcaObj;
+        MaterialItem materialItem = (MaterialItem) selectedMaterialObj;
+ColorItem colorItem = (ColorItem) selectedColorObj;
         // Convertir campos numéricos
         int codigoInt = Integer.parseInt(codigo);
         int precioInt = Integer.parseInt(precio);
         int cantidadInt = Integer.parseInt(cantidad);
-        int materialInt = Integer.parseInt(material); // corregido
+        int materialInt = materialItem.getIdMaterial(); // corregido
         int marcaInt = idItem.getIdMarca();       // corregido
-        int colorInt = Integer.parseInt(color);       // corregido
+        int colorInt = colorItem.getIdColor();       // corregido
 
         // Crear el objeto Producto
         Producto nuevoProducto = new Producto(codigoInt, descripcion, precioInt, cantidadInt, materialInt, marcaInt, nombre, colorInt);
@@ -1413,10 +1474,10 @@ private void llenarTablaUsuarios() {
         String descripcion = DescripcionTxT.getText();
         int precio = Integer.parseInt(PrecioTxT.getText());
         int cantidad = Integer.parseInt(CantidadTxT.getText());
-        int material = Integer.parseInt(MaterialTxT.getText()); // corregido
+        //int material = Integer.parseInt(MaterialComboBox.getText()); // corregido
         //int marca = Integer.parseInt(MarcaComboBox.getText());       // corregido
         String nombre = NombTxT.getText();
-        int color = Integer.parseInt(ColorTxT.getText());
+        //int color = Integer.parseInt(ColorComboBox.getText());
 
         // Verificar que el campo de nombre no esté vacío
         if (nombre.isEmpty()) {
@@ -1424,7 +1485,7 @@ private void llenarTablaUsuarios() {
             return;
         }
 
-        Producto producto = new Producto(codigo, descripcion, precio, cantidad, material, 0 , nombre, color);
+        Producto producto = new Producto(codigo, descripcion, precio, cantidad, 0, 0 , nombre, 0);
 
         if (app.modificarProducto(producto)) {
             JOptionPane.showMessageDialog(this, "Producto modificado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -1584,9 +1645,9 @@ llenarTablaUsuarios();
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void ColorTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ColorTxTActionPerformed
+    private void MaterialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MaterialComboBoxActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_ColorTxTActionPerformed
+    }//GEN-LAST:event_MaterialComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1638,7 +1699,7 @@ llenarTablaUsuarios();
     private javax.swing.JLabel CodigoPro;
     private javax.swing.JTextField CodigoTxT;
     private javax.swing.JTextField CodigoTxt;
-    private javax.swing.JTextField ColorTxT;
+    private javax.swing.JComboBox<ColorItem> ColorComboBox;
     private javax.swing.JPanel Config;
     private javax.swing.JButton ConsulBtn;
     private javax.swing.JButton ConsultarBtn;
@@ -1657,7 +1718,7 @@ llenarTablaUsuarios();
     private javax.swing.JPanel ExitBtn;
     private javax.swing.JLabel ExitTxT;
     private javax.swing.JComboBox<MarcaItem> MarcaComboBox;
-    private javax.swing.JTextField MaterialTxT;
+    private javax.swing.JComboBox<MaterialItem> MaterialComboBox;
     private javax.swing.JButton ModificarBtn;
     private javax.swing.JLabel Nom;
     private javax.swing.JTextField NomTxT;
@@ -1729,5 +1790,7 @@ llenarTablaUsuarios();
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
-
+private void MarcaComboBoxActionPerformed(java.awt.event.ActionEvent evt) {                                            
+    // No necesitas poner nada aquí si no quieres hacer nada al seleccionar una marca
+}
 }

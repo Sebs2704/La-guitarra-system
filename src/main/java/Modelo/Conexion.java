@@ -54,11 +54,17 @@ public class Conexion {
     public List<Producto> obtenerTodosLosProductos() {
         List<Producto> productos = new ArrayList<>();
         String sql = "SELECT producto.codigo, producto.descripcion, producto.precio, producto.cantidad, " +
-                 "producto.material, producto.marca, producto.nombre AS nombre_producto, producto.color, " + // p.nombre AS nombre_producto para evitar ambigüedad
-                 "marca.nombre AS nombre_marca, marca.id_marca " + // Seleccionamos el nombre de la marca con un alias
-                 "FROM public.producto " +
-                 "LEFT JOIN public.marca ON producto.marca = marca.id_marca " + // Unimos las tablas por el ID de marca
-                 "ORDER BY producto.codigo ASC";
+             "producto.material, producto.marca, producto.nombre AS nombre_producto, producto.color, " +
+             "marca.nombre AS marca_nombre, marca.id_marca, " +
+             "material.nombre AS material_nombre, material.id_material, " +
+             "color.nombre AS color_nombre, color.id_color " +
+             "FROM public.producto " +
+             "LEFT JOIN public.marca ON producto.marca = marca.id_marca " +
+             "LEFT JOIN public.material ON producto.material = material.id_material " +
+             "LEFT JOIN public.color ON producto.color = color.id_color " +
+             "ORDER BY producto.codigo ASC";
+
+
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
 
@@ -67,15 +73,19 @@ public class Conexion {
                 String descripcion = rs.getString("descripcion");
                 int precio = rs.getInt("precio");
                 int cantidad = rs.getInt("cantidad");
-                int material = rs.getInt("material");  // ahora es int
-                String marcaNombre = rs.getString("nombre_marca"); 
+                String materialNombre = rs.getString("material_nombre");  // ahora es int
+                int materialId = rs.getInt("id_material");
+                String marcaNombre = rs.getString("marca_nombre"); 
                 int marcaId = rs.getInt("id_marca");
                 String nombre = rs.getString("nombre_producto");
-                int color = rs.getInt("color");
+                int colorId = rs.getInt("id_color");
+                String colorNombre = rs.getString("color_nombre");
                 
                 MarcaItem marcaitem = new MarcaItem(marcaId, marcaNombre);
+                MaterialItem materialitem = new MaterialItem(materialId, materialNombre);
+                ColorItem coloritem = new ColorItem(colorId, colorNombre);
 
-                Producto producto = new Producto(codigo, descripcion, precio, cantidad, material, marcaitem, nombre, color);
+                Producto producto = new Producto(codigo, descripcion, precio, cantidad, materialitem, marcaitem, nombre, coloritem);
                 productos.add(producto);
             }
         } catch (SQLException e) {
@@ -86,27 +96,26 @@ public class Conexion {
     }
 
     public List<Usuario> obtenerTodosLosUsuarios() {
-        List<Usuario> usuarios = new ArrayList<>();
-        String sql = "SELECT nombre_usuario, contraseña, nombre, apellido FROM usuario";
+    List<Usuario> usuarios = new ArrayList<>();
+    String sql = "SELECT nombre_usuario, contraseña FROM usuario";
 
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                Usuario usuario = new Usuario(
-                        rs.getString("nombre_usuario"),
-                        rs.getString("contraseña"),
-                        rs.getString("nombre"),
-                        rs.getString("apellido")
-                );
-                usuarios.add(usuario);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error al obtener los usuarios: " + e.getMessage());
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+        while (rs.next()) {
+            Usuario usuario = new Usuario(
+                rs.getString("nombre_usuario"),
+                rs.getString("contraseña"),
+                "",  // No hay campo 'nombre' en esta tabla
+                ""   // No hay campo 'apellido'
+            );
+            usuarios.add(usuario);
         }
-
-        return usuarios;
+    } catch (SQLException e) {
+        System.out.println("Error al obtener los usuarios: " + e.getMessage());
     }
+
+    return usuarios;
+}
+
 
     public Producto consultarProducto(int codigo) {
         String sql = "SELECT * FROM producto WHERE codigo = ?";
@@ -115,20 +124,24 @@ public class Conexion {
 
             pstmt.setInt(1, codigo);
             ResultSet rs = pstmt.executeQuery();
-
+//me duelen los ojos
             if (rs.next()) {
                 String descripcion = rs.getString("descripcion");
                 int precio = rs.getInt("precio");
                 int cantidad = rs.getInt("cantidad");
-                int material = rs.getInt("material");  // ahora es int
+                String materialNombre = rs.getString("nombre");  // ahora es int
+                int materialId = rs.getInt("id_material");
                 String marcaNombre = rs.getString("nombre"); 
                 int marcaId = rs.getInt("id_marca");
                 String nombre = rs.getString("nombre");
-                int color = rs.getInt("color");
+                int colorId = rs.getInt("id_color");
+                String colorNombre = rs.getString("nombre");
                 
                 MarcaItem marcaitem = new MarcaItem(marcaId, marcaNombre);
+                MaterialItem materialitem = new MaterialItem(materialId, materialNombre);
+                ColorItem coloritem = new ColorItem(colorId, colorNombre);
 
-                return new Producto(codigo, descripcion, precio, cantidad, material, marcaitem, nombre, color);
+                return new Producto(codigo, descripcion, precio, cantidad, materialitem, marcaitem, nombre, coloritem);
             }
         } catch (SQLException e) {
             System.out.println("Error al consultar el producto: " + e.getMessage());
@@ -215,6 +228,7 @@ public class Conexion {
             return false; // Retorna false si el usuario ya existe
         }
         String sql = "INSERT INTO usuario (nombre_usuario, contraseña, nombre, apellido) VALUES (?, ?, ?, ?)";
+        String insertarPersona = "INSERT INTO persona (nombre, apellido) VALUES (?, ?) RETURNING id_persona";
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -266,10 +280,10 @@ public class Conexion {
             pstmt.setString(2, producto.getDescripcion());
             pstmt.setInt(3, producto.getPrecio());
             pstmt.setInt(4, producto.getCantidad());
-            pstmt.setInt(5, producto.getMaterial()); // corregido
+            pstmt.setInt(5, producto.getMaterial().getIdMaterial()); // corregido
             pstmt.setInt(6, producto.getMarca().getIdMarca());    // corregido
             pstmt.setString(7, producto.getNombre());
-            pstmt.setInt(8, producto.getColor());
+            pstmt.setInt(8, producto.getColor().getIdColor());
 
             int rowsAffected = pstmt.executeUpdate();
             return rowsAffected > 0;
@@ -288,10 +302,10 @@ public class Conexion {
             pstmt.setString(1, producto.getDescripcion());
             pstmt.setInt(2, producto.getPrecio());
             pstmt.setInt(3, producto.getCantidad());
-            pstmt.setInt(4, producto.getMaterial()); // corregido
+            pstmt.setInt(4, producto.getMaterial().getIdMaterial()); // corregido
             pstmt.setInt(5, producto.getMarca().getIdMarca());    // corregido
             pstmt.setString(6, producto.getNombre());
-            pstmt.setInt(7, producto.getColor());
+            pstmt.setInt(7, producto.getColor().getIdColor());
             pstmt.setInt(8, producto.getCodigo());
 
             int rowsAffected = pstmt.executeUpdate();
@@ -418,4 +432,47 @@ public class Conexion {
         return marcas;
     }
 
+     public List<ColorItem> obtenerTodosLosColores() {
+        List<ColorItem> colores = new ArrayList<>();
+        // Consulta SQL para obtener id y nombre de la tabla color
+        String sql = "SELECT id_color, nombre FROM public.color ORDER BY nombre ASC";
+
+        // Usar try-with-resources para asegurar el cierre automático
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                colores.add(new ColorItem(
+                        rs.getInt("id_color"),
+                        rs.getString("nombre")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener los colores: " + e.getMessage());
+            // Podrías devolver una lista vacía o null, o lanzar una excepción
+        }
+        return colores;
+                
+    }
+     
+     public List<MaterialItem> obtenerTodosLosMateriales() {
+        List<MaterialItem> materiales = new ArrayList<>();
+        // Consulta SQL para obtener id y nombre de la tabla marca
+        String sql = "SELECT id_material, nombre FROM public.material ORDER BY nombre ASC";
+
+        // Usar try-with-resources para asegurar el cierre automático
+        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                materiales.add(new MaterialItem(
+                        rs.getInt("id_material"),
+                        rs.getString("nombre")
+                ));
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al obtener los materiales: " + e.getMessage());
+            // Podrías devolver una lista vacía o null, o lanzar una excepción
+        }
+        return materiales;
+    }
 }
+

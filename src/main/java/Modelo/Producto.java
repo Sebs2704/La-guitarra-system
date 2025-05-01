@@ -6,23 +6,23 @@ public class Producto {
     String Descripcion;
     int Precio;
     int Cantidad;
-    int Material;   // ahora es int
+    MaterialItem Material;   // ahora es int
     MarcaItem Marca;      // ahora es int
     String Nombre;
-    int Color;
-
+    ColorItem Color;
+//tengo sueño
     public Producto() {
         this.Codigo = 0;
         this.Descripcion = "";
         this.Precio = 0;
         this.Cantidad = 0;
-        this.Material = 0;
+        this.Material = null;
         this.Marca = null;
         this.Nombre = "";
-        this.Color = 0;
+        this.Color = null;
     }// ya era int
 
-    public Producto(int Codigo, String Descripcion, int Precio, int Cantidad, int Material, MarcaItem Marca, String Nombre, int Color) {
+    public Producto(int Codigo, String Descripcion, int Precio, int Cantidad, MaterialItem Material, MarcaItem Marca, String Nombre, ColorItem Color) {
         this.Codigo = Codigo;
         this.Descripcion = Descripcion;
         this.Precio = Precio;
@@ -38,10 +38,10 @@ public class Producto {
         this.Descripcion = Descripcion;
         this.Precio = Precio;
         this.Cantidad = Cantidad;
-        this.Material = Material;
+        this.Material.setIdMaterial(Material);
         this.Marca.setIdMarca(Marca);
         this.Nombre = Nombre;
-        this.Color = Color;
+        this.Color.setIdColor(Color);
     }
 
     public int getCodigo() {
@@ -76,11 +76,11 @@ public class Producto {
         this.Cantidad = Cantidad;
     }
 
-    public int getMaterial() {
+    public MaterialItem getMaterial() {
         return Material;
     }
 
-    public void setMaterial(int Material) {
+    public void setMaterial(MaterialItem Material) {
         this.Material = Material;
     }
 
@@ -100,11 +100,11 @@ public class Producto {
         this.Nombre = Nombre;
     }
 
-    public int getColor() {
+    public ColorItem getColor() {
         return Color;
     }
 
-    public void setColor(int Color) {
+    public void setColor(ColorItem Color) {
         this.Color = Color;
     }
 }

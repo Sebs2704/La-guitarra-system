@@ -291,97 +291,84 @@ public class Registro extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jPanel4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MousePressed
-        xMouse = evt.getX();
-        yMouse = evt.getY();
-    }//GEN-LAST:event_jPanel4MousePressed
-
-    private void UsetTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsetTxtActionPerformed
-       UsetTxt.setText("");
-        UsetTxt.setForeground(Color.black);
-        UserPassword.setText("********");
-        UserPassword.setForeground(Color.black);
-    }//GEN-LAST:event_UsetTxtActionPerformed
-
-    private void NombreTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombreTxTActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_NombreTxTActionPerformed
-
-    private void RegistroTxTMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RegistroTxTMouseEntered
-        RegistroBtn.setBackground(new Color(143, 75,40));
-    }//GEN-LAST:event_RegistroTxTMouseEntered
-
-    private void RegistroTxTMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RegistroTxTMouseExited
-        RegistroBtn.setBackground(new Color(117, 80,72));
-    }//GEN-LAST:event_RegistroTxTMouseExited
-
-    private void RegistroTxTMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RegistroTxTMousePressed
-
-        String Usuario = UsetTxt.getText();
-String Contraseña = new String(UserPassword.getPassword());
-String nombre = NombreTxT.getText();
-String Apellido = ApellidoTxT.getText();
-
-// Verificar que todos los campos estén llenos
-if (Usuario.isEmpty() || Contraseña.isEmpty() || nombre.isEmpty() || Apellido.isEmpty()) {
-    JOptionPane.showMessageDialog(this, "Rellenar todos los campos", "Advertencia", JOptionPane.WARNING_MESSAGE);
-    return; 
-}
-
-// Crear el objeto Usuario
-Usuario nuevoUsuario = new Usuario(Usuario, Contraseña, nombre, Apellido);
-
-// Intentar registrar el usuario
-boolean registrado = app.registrarUsuario(nuevoUsuario);
-
-// Mostrar mensaje basado en el resultado del registro
-if (registrado) {
-    JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-    
-    // Cerrar la ventana de registro
-    this.dispose();
-
-    // Abrir la interfaz principal
-    Principal principalInterfaz = new Principal();
-    principalInterfaz.setVisible(true);
-
-} else {
-    // Verificar si el fallo se debe a que el usuario ya existe
-    if (app.usuarioExiste(Usuario)) {
-        JOptionPane.showMessageDialog(this, "El usuario ya está registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(this, "Error al registrar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-}
-
-    }//GEN-LAST:event_RegistroTxTMousePressed
-
-    private void ExitTxtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExitTxtMouseClicked
-        System.exit(0);
-    }//GEN-LAST:event_ExitTxtMouseClicked
-
-    private void ExitTxtMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExitTxtMouseEntered
-        ExitBtn.setBackground(Color.red);
-    }//GEN-LAST:event_ExitTxtMouseEntered
-
-    private void ExitTxtMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExitTxtMouseExited
-        ExitBtn.setBackground(Color.white);
-    }//GEN-LAST:event_ExitTxtMouseExited
-
     private void HeaderMouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_HeaderMouseDragged
         int x= evt.getXOnScreen();
         int y= evt.getYOnScreen();
         this.setLocation(x - xMouse, y - yMouse);
     }//GEN-LAST:event_HeaderMouseDragged
 
-    private void UserPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserPasswordActionPerformed
+    private void ExitTxtMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExitTxtMouseExited
+        ExitBtn.setBackground(Color.white);
+    }//GEN-LAST:event_ExitTxtMouseExited
 
-    }//GEN-LAST:event_UserPasswordActionPerformed
+    private void ExitTxtMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExitTxtMouseEntered
+        ExitBtn.setBackground(Color.red);
+    }//GEN-LAST:event_ExitTxtMouseEntered
 
-    private void UserPasswordMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UserPasswordMousePressed
+    private void ExitTxtMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ExitTxtMouseClicked
+        System.exit(0);
+    }//GEN-LAST:event_ExitTxtMouseClicked
+
+    private void RegistroTxTMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RegistroTxTMousePressed
+
+        String Usuario = UsetTxt.getText();
+        String Contraseña = new String(UserPassword.getPassword());
+        String nombre = NombreTxT.getText();
+        String Apellido = ApellidoTxT.getText();
+
+        // Verificar que todos los campos estén llenos
+        if (Usuario.isEmpty() || Contraseña.isEmpty() || nombre.isEmpty() || Apellido.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Rellenar todos los campos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Crear el objeto Usuario
+        Usuario nuevoUsuario = new Usuario(Usuario, Contraseña, nombre, Apellido);
+
+        // Intentar registrar el usuario
+        boolean registrado = app.registrarUsuario(nuevoUsuario);
+
+        // Mostrar mensaje basado en el resultado del registro
+        if (registrado) {
+            JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+            // Cerrar la ventana de registro
+            this.dispose();
+
+            // Abrir la interfaz principal
+            Principal principalInterfaz = new Principal();
+            principalInterfaz.setVisible(true);
+
+        } else {
+            // Verificar si el fallo se debe a que el usuario ya existe
+            if (app.usuarioExiste(Usuario)) {
+                JOptionPane.showMessageDialog(this, "El usuario ya está registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al registrar el usuario", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_RegistroTxTMousePressed
+
+    private void RegistroTxTMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RegistroTxTMouseExited
+        RegistroBtn.setBackground(new Color(117, 80,72));
+    }//GEN-LAST:event_RegistroTxTMouseExited
+
+    private void RegistroTxTMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_RegistroTxTMouseEntered
+        RegistroBtn.setBackground(new Color(143, 75,40));
+    }//GEN-LAST:event_RegistroTxTMouseEntered
+
+    private void ApellidoTxTMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ApellidoTxTMousePressed
+        NombreTxT.setForeground(Color.black);
+        ApellidoTxT.setText("");
+        ApellidoTxT.setForeground(Color.black);
+    }//GEN-LAST:event_ApellidoTxTMousePressed
+
+    private void UsetTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsetTxtActionPerformed
+        UsetTxt.setText("");
         UsetTxt.setForeground(Color.black);
-        UserPassword.setText("");
-        UserPassword.setForeground(Color.black);    }//GEN-LAST:event_UserPasswordMousePressed
+        UserPassword.setText("********");
+        UserPassword.setForeground(Color.black);
+    }//GEN-LAST:event_UsetTxtActionPerformed
 
     private void UsetTxtMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UsetTxtMousePressed
         UsetTxt.setText("");
@@ -390,18 +377,30 @@ if (registrado) {
         UserPassword.setForeground(Color.black);
     }//GEN-LAST:event_UsetTxtMousePressed
 
+    private void UserPasswordActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UserPasswordActionPerformed
+
+    }//GEN-LAST:event_UserPasswordActionPerformed
+
+    private void UserPasswordMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_UserPasswordMousePressed
+        UsetTxt.setForeground(Color.black);
+        UserPassword.setText("");
+    }//GEN-LAST:event_UserPasswordMousePressed
+
+    private void jPanel4MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel4MousePressed
+        xMouse = evt.getX();
+        yMouse = evt.getY();
+    }//GEN-LAST:event_jPanel4MousePressed
+
+    private void NombreTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombreTxTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NombreTxTActionPerformed
+
     private void NombreTxTMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NombreTxTMousePressed
         NombreTxT.setText("");
         NombreTxT.setForeground(Color.black);
         ApellidoTxT.setText("Ingrese su Apellido");
         ApellidoTxT.setForeground(Color.black);
     }//GEN-LAST:event_NombreTxTMousePressed
-
-    private void ApellidoTxTMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ApellidoTxTMousePressed
-        NombreTxT.setForeground(Color.black);
-        ApellidoTxT.setText("");
-        ApellidoTxT.setForeground(Color.black);        
-    }//GEN-LAST:event_ApellidoTxTMousePressed
 
     /**
      * @param args the command line arguments
