@@ -96,29 +96,42 @@ public class Conexion {
     }
 
     public List<Usuario> obtenerTodosLosUsuarios() {
-    List<Usuario> usuarios = new ArrayList<>();
-    String sql = "SELECT nombre_usuario, contraseña FROM usuario";
+        List<Usuario> usuarios = new ArrayList<>();
+        String sql = "SELECT u.nombre_usuario, u.contraseña, p.nombre, p.apellido " +
+                     "FROM usuario u JOIN persona p ON u.id_persona = p.id_persona";
 
-    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-        while (rs.next()) {
-            Usuario usuario = new Usuario(
-                rs.getString("nombre_usuario"),
-                rs.getString("contraseña"),
-                "",  // No hay campo 'nombre' en esta tabla
-                ""   // No hay campo 'apellido'
-            );
-            usuarios.add(usuario);
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                usuarios.add(new Usuario(
+                        rs.getString("nombre_usuario"),
+                        rs.getString("contraseña"),
+                        rs.getString("nombre"),
+                        rs.getString("apellido")
+                ));
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al obtener los usuarios: " + e.getMessage());
         }
-    } catch (SQLException e) {
-        System.out.println("Error al obtener los usuarios: " + e.getMessage());
-    }
 
-    return usuarios;
-}
+        return usuarios;
+    }
 
 
     public Producto consultarProducto(int codigo) {
-        String sql = "SELECT * FROM producto WHERE codigo = ?";
+        String sql = "SELECT p.codigo, p.descripcion, p.precio, p.cantidad, " +
+             "p.material, p.marca, p.nombre AS nombre_producto, p.color, " +
+             "m.id_marca, m.nombre AS marca_nombre, " +
+             "mat.id_material, mat.nombre AS material_nombre, " +
+             "c.id_color, c.nombre AS color_nombre " +
+             "FROM producto p " +
+             "LEFT JOIN marca m ON p.marca = m.id_marca " +
+             "LEFT JOIN material mat ON p.material = mat.id_material " +
+             "LEFT JOIN color c ON p.color = c.id_color " +
+             "WHERE p.codigo = ?";
+
 
         try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -129,13 +142,13 @@ public class Conexion {
                 String descripcion = rs.getString("descripcion");
                 int precio = rs.getInt("precio");
                 int cantidad = rs.getInt("cantidad");
-                String materialNombre = rs.getString("nombre");  // ahora es int
+                String materialNombre = rs.getString("material_nombre");  // ahora es int
                 int materialId = rs.getInt("id_material");
-                String marcaNombre = rs.getString("nombre"); 
+                String marcaNombre = rs.getString("marca_nombre"); 
                 int marcaId = rs.getInt("id_marca");
-                String nombre = rs.getString("nombre");
+                String nombre = rs.getString("nombre_producto");
                 int colorId = rs.getInt("id_color");
-                String colorNombre = rs.getString("nombre");
+                String colorNombre = rs.getString("color_nombre");
                 
                 MarcaItem marcaitem = new MarcaItem(marcaId, marcaNombre);
                 MaterialItem materialitem = new MaterialItem(materialId, materialNombre);
@@ -185,23 +198,36 @@ public class Conexion {
     }
 
     public boolean actualizarUsuario(Usuario usuario) {
-        String sql = "UPDATE usuario SET contraseña = ?, nombre = ?, apellido = ? WHERE nombre_usuario = ?";
+         String sqlUsuario = "UPDATE usuario SET contraseña = ? WHERE nombre_usuario = ?";
+    String sqlPersona = "UPDATE persona SET nombre = ?, apellido = ? WHERE id_persona = (" +
+                        "SELECT id_persona FROM usuario WHERE nombre_usuario = ?)";
 
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    try (Connection conn = connect()) {
+        conn.setAutoCommit(false); // Inicia transacción
 
-            pstmt.setString(1, usuario.getContraseña()); // Asegúrate de encriptar la contraseña antes
-            pstmt.setString(2, usuario.getNombre());
-            pstmt.setString(3, usuario.getApellido());
-            pstmt.setString(4, usuario.getUsuario());
-
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error al actualizar el usuario: " + e.getMessage());
-            return false;
+        // Actualiza la contraseña del usuario
+        try (PreparedStatement pstmt1 = conn.prepareStatement(sqlUsuario)) {
+            pstmt1.setString(1, usuario.getContraseña());
+            pstmt1.setString(2, usuario.getUsuario());
+            pstmt1.executeUpdate();
         }
+
+        // Actualiza el nombre y apellido en la tabla persona
+        try (PreparedStatement pstmt2 = conn.prepareStatement(sqlPersona)) {
+            pstmt2.setString(1, usuario.getNombre());
+            pstmt2.setString(2, usuario.getApellido());
+            pstmt2.setString(3, usuario.getUsuario());
+            pstmt2.executeUpdate();
+        }
+
+        conn.commit(); // Confirma ambos cambios
+        return true;
+
+    } catch (SQLException e) {
+        System.out.println("Error al actualizar el usuario: " + e.getMessage());
+        return false;
     }
+}
 
     // Método para verificar si un usuario ya existe en la base de datos
     public boolean usuarioExiste(String nombreUsuario) {
@@ -222,23 +248,41 @@ public class Conexion {
     // Método para registrar un usuario en la base de datos
 
     public boolean registrarUsuario(Usuario usuario) {
-        // Verificar si el usuario ya existe
         if (usuarioExiste(usuario.getUsuario())) {
             System.out.println("El usuario ya está registrado.");
-            return false; // Retorna false si el usuario ya existe
+            return false;
         }
-        String sql = "INSERT INTO usuario (nombre_usuario, contraseña, nombre, apellido) VALUES (?, ?, ?, ?)";
-        String insertarPersona = "INSERT INTO persona (nombre, apellido) VALUES (?, ?) RETURNING id_persona";
 
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        String sqlPersona = "INSERT INTO persona (nombre, apellido) VALUES (?, ?) RETURNING id_persona";
+        String sqlUsuario = "INSERT INTO usuario (nombre_usuario, contraseña, id_persona) VALUES (?, ?, ?)";
 
-            pstmt.setString(1, usuario.getUsuario());
-            pstmt.setString(2, usuario.getContraseña());
-            pstmt.setString(3, usuario.getNombre());
-            pstmt.setString(4, usuario.getApellido());
+        try (Connection conn = connect();
+             PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona);
+             PreparedStatement stmtUsuario = conn.prepareStatement(sqlUsuario)) {
 
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+            conn.setAutoCommit(false);
+
+            // Insertar en persona
+            stmtPersona.setString(1, usuario.getNombre());
+            stmtPersona.setString(2, usuario.getApellido());
+            ResultSet rs = stmtPersona.executeQuery();
+
+            int idPersona = -1;
+            if (rs.next()) {
+                idPersona = rs.getInt("id_persona");
+            } else {
+                conn.rollback();
+                return false;
+            }
+
+            // Insertar en usuario
+            stmtUsuario.setString(1, usuario.getUsuario());
+            stmtUsuario.setString(2, usuario.getContraseña());
+            stmtUsuario.setInt(3, idPersona);
+
+            int filas = stmtUsuario.executeUpdate();
+            conn.commit();
+            return filas > 0;
 
         } catch (SQLException e) {
             System.out.println("Error al registrar el usuario: " + e.getMessage());
@@ -334,16 +378,18 @@ public class Conexion {
     }
 
     public Usuario obtenerUsuarioPorNombre(String nombreUsuario) {
-        String sql = "SELECT * FROM usuario WHERE nombre_usuario = ?";
-        Usuario usuario = null;
+        String sql = "SELECT u.nombre_usuario, u.contraseña, p.nombre, p.apellido " +
+                     "FROM usuario u JOIN persona p ON u.id_persona = p.id_persona " +
+                     "WHERE u.nombre_usuario = ?";
 
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = connect();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setString(1, nombreUsuario);
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
-                usuario = new Usuario(
+                return new Usuario(
                         rs.getString("nombre_usuario"),
                         rs.getString("contraseña"),
                         rs.getString("nombre"),
@@ -355,7 +401,7 @@ public class Conexion {
             System.out.println("Error al buscar el usuario: " + e.getMessage());
         }
 
-        return usuario;
+        return null;
     }
 
     public boolean registrarCliente(Cliente cliente) {
@@ -421,7 +467,7 @@ public class Conexion {
 
             while (rs.next()) {
                 marcas.add(new MarcaItem(
-                        rs.getInt("id_marca"),
+                        rs.getInt("id_marca"),     
                         rs.getString("nombre")
                 ));
             }

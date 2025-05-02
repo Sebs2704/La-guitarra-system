@@ -35,13 +35,13 @@ public class Producto {
 
     public Producto(int Codigo, String Descripcion, int Precio, int Cantidad, int Material, int Marca, String Nombre, int Color) {
         this.Codigo = Codigo;
-        this.Descripcion = Descripcion;
-        this.Precio = Precio;
-        this.Cantidad = Cantidad;
-        this.Material.setIdMaterial(Material);
-        this.Marca.setIdMarca(Marca);
-        this.Nombre = Nombre;
-        this.Color.setIdColor(Color);
+    this.Descripcion = Descripcion;
+    this.Precio = Precio;
+    this.Cantidad = Cantidad;
+    this.Material = new MaterialItem(Material, "");  // Puedes usar "" si el nombre no se conoce
+    this.Marca = new MarcaItem(Marca, "");
+    this.Nombre = Nombre;
+    this.Color = new ColorItem(Color, "");
     }
 
     public int getCodigo() {

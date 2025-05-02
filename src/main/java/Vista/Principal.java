@@ -1474,27 +1474,39 @@ ColorItem colorItem = (ColorItem) selectedColorObj;
         String descripcion = DescripcionTxT.getText();
         int precio = Integer.parseInt(PrecioTxT.getText());
         int cantidad = Integer.parseInt(CantidadTxT.getText());
-        //int material = Integer.parseInt(MaterialComboBox.getText()); // corregido
-        //int marca = Integer.parseInt(MarcaComboBox.getText());       // corregido
         String nombre = NombTxT.getText();
-        //int color = Integer.parseInt(ColorComboBox.getText());
 
-        // Verificar que el campo de nombre no esté vacío
-        if (nombre.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "El nombre del producto no puede estar vacío", "Error", JOptionPane.WARNING_MESSAGE);
+        // Obtener los objetos seleccionados en los ComboBox
+        MaterialItem materialItem = (MaterialItem) MaterialComboBox.getSelectedItem();
+        MarcaItem marcaItem = (MarcaItem) MarcaComboBox.getSelectedItem();
+        ColorItem colorItem = (ColorItem) ColorComboBox.getSelectedItem();
+
+        if (nombre.isEmpty() || materialItem == null || marcaItem == null || colorItem == null) {
+            JOptionPane.showMessageDialog(this, "Todos los campos deben estar completos", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        Producto producto = new Producto(codigo, descripcion, precio, cantidad, 0, 0 , nombre, 0);
+        // Crear el objeto Producto con objetos completos
+        Producto producto = new Producto(
+            codigo,
+            descripcion,
+            precio,
+            cantidad,
+            materialItem,
+            marcaItem,
+            nombre,
+            colorItem
+        );
 
         if (app.modificarProducto(producto)) {
             JOptionPane.showMessageDialog(this, "Producto modificado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             cargarProductosEnTabla(); // Actualizar la tabla
+            limpiarCampos(); // Limpia los campos luego de actualizar
         } else {
             JOptionPane.showMessageDialog(this, "Error al modificar el producto", "Error", JOptionPane.ERROR_MESSAGE);
         }
     } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Ingrese valores numéricos válidos para Código, Precio, Cantidad, Material, Marca y Color", "Error", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Ingrese valores numéricos válidos para Código, Precio y Cantidad", "Error", JOptionPane.ERROR_MESSAGE);
     }
     }//GEN-LAST:event_ModificarBtnActionPerformed
 
