@@ -110,6 +110,7 @@ private void cargarProductosEnTabla() {
     modeloTabla.setRowCount(0); // Limpiar la tabla
 
     List<Producto> productos = app.obtenerTodosLosProductos();
+    
     for (Producto producto : productos) {
         modeloTabla.addRow(new Object[]{
             producto.getCodigo(),
@@ -142,7 +143,7 @@ private void llenarTablaUsuarios() {
     for (Usuario usuario : usuarios) {
         modelo.addRow(new Object[]{
             usuario.getUsuario(),
-            usuario.getContraseña(), // Considera mostrarla encriptada o enmascarada
+            usuario.getContraseña(), 
             usuario.getNombre(),
             usuario.getApellido()
         });
@@ -152,6 +153,30 @@ private void llenarTablaUsuarios() {
     UserTbld.setModel(modelo);
     }
 
+private void LlenarTabladatos() {
+    DefaultTableModel modelo = new DefaultTableModel();
+    modelo.setRowCount(0);
+    modelo.addColumn("Marcas");
+    modelo.addColumn("Colores");
+    modelo.addColumn("Materiales");
+
+    List<ColorItem> colores = conexion.obtenerTodosLosColores();
+    List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+    List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
+
+
+    int max = Math.max(marcas.size(), Math.max(colores.size(), materiales.size()));
+
+    for (int i = 0; i < max; i++) {
+        String marca = (i < marcas.size()) ? marcas.get(i).getNombre() : "";
+        String color = (i < colores.size()) ? colores.get(i).getNombre() : "";
+        String material = (i < materiales.size()) ? materiales.get(i).getNombre() : "";
+        modelo.addRow(new Object[]{marca, color, material});
+    }
+
+    // Asignar el modelo a la tabla
+    Datostbld.setModel(modelo);
+}
     Conexion app = new Conexion();
     int xMouse, yMouse;
     public Principal() {
@@ -159,6 +184,7 @@ private void llenarTablaUsuarios() {
         cargarDatosComboBoxes();
         cargarProductosEnTabla();
         llenarTablaUsuarios();
+        LlenarTabladatos();
         
     }
     
@@ -168,8 +194,7 @@ private void llenarTablaUsuarios() {
     private void initComponents() {
 
         jSeparator1 = new javax.swing.JSeparator();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jMenuItem1 = new javax.swing.JMenuItem();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         ClientesBtn = new javax.swing.JButton();
@@ -240,6 +265,7 @@ private void llenarTablaUsuarios() {
         MarcaComboBox = new javax.swing.JComboBox<MarcaItem>();
         MaterialComboBox = new javax.swing.JComboBox<>();
         ColorComboBox = new javax.swing.JComboBox<>();
+        Editardatosbutton = new javax.swing.JButton();
         Reparaciones = new javax.swing.JPanel();
         Venntas = new javax.swing.JPanel();
         jScrollPane4 = new javax.swing.JScrollPane();
@@ -272,19 +298,20 @@ private void llenarTablaUsuarios() {
         ConsulBtn = new javax.swing.JButton();
         ElimBtn = new javax.swing.JButton();
         ActualizarBtn = new javax.swing.JButton();
+        jPanel5 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        Datostbld = new javax.swing.JTable();
+        jLabel9 = new javax.swing.JLabel();
+        MarcaTxT = new javax.swing.JTextField();
+        ColorTxT = new javax.swing.JTextField();
+        MaterialTxT = new javax.swing.JTextField();
+        AñadirBtn = new javax.swing.JButton();
+        EliminarBtn2 = new javax.swing.JButton();
+        jLabel10 = new javax.swing.JLabel();
+        jLabel11 = new javax.swing.JLabel();
+        jLabel12 = new javax.swing.JLabel();
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane5.setViewportView(jTable1);
+        jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setUndecorated(true);
@@ -841,6 +868,11 @@ private void llenarTablaUsuarios() {
         jLabel6.setText("Color");
 
         NombTxT.setBackground(new java.awt.Color(207, 128, 38));
+        NombTxT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NombTxTActionPerformed(evt);
+            }
+        });
 
         RegistrarBtn.setBackground(new java.awt.Color(117, 80, 72));
         RegistrarBtn.setForeground(new java.awt.Color(255, 255, 255));
@@ -890,6 +922,15 @@ private void llenarTablaUsuarios() {
             }
         });
 
+        Editardatosbutton.setBackground(new java.awt.Color(117, 80, 72));
+        Editardatosbutton.setForeground(new java.awt.Color(255, 255, 255));
+        Editardatosbutton.setText("Editar Datos");
+        Editardatosbutton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditardatosbuttonActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout ProductosLayout = new javax.swing.GroupLayout(Productos);
         Productos.setLayout(ProductosLayout);
         ProductosLayout.setHorizontalGroup(
@@ -908,18 +949,9 @@ private void llenarTablaUsuarios() {
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(ProductosLayout.createSequentialGroup()
-                                        .addGap(0, 52, Short.MAX_VALUE)
+                                        .addGap(0, 0, Short.MAX_VALUE)
                                         .addComponent(CodigoTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(NombTxT)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ProductosLayout.createSequentialGroup()
-                                .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(RegistrarBtn)
-                                    .addComponent(EliminarBtn))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(ModificarBtn)
-                                    .addComponent(ConsultarBtn))
-                                .addGap(20, 20, 20))
                             .addGroup(ProductosLayout.createSequentialGroup()
                                 .addComponent(Precio, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(29, 29, 29)
@@ -955,7 +987,20 @@ private void llenarTablaUsuarios() {
                             .addGroup(ProductosLayout.createSequentialGroup()
                                 .addGap(12, 12, 12)
                                 .addComponent(MarcaComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))))
+                    .addGroup(ProductosLayout.createSequentialGroup()
+                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addComponent(RegistrarBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(ConsultarBtn))
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addComponent(EliminarBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(ModificarBtn)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(Editardatosbutton)
+                        .addGap(12, 12, 12)))
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 516, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -996,18 +1041,24 @@ private void llenarTablaUsuarios() {
                         .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel6)
                             .addComponent(ColorComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(28, 28, 28)
-                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(RegistrarBtn)
-                            .addComponent(ConsultarBtn))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 39, Short.MAX_VALUE)
-                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(ModificarBtn)
-                            .addComponent(EliminarBtn)))
+                        .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addGap(28, 28, 28)
+                                .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(RegistrarBtn)
+                                    .addComponent(ConsultarBtn))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addGroup(ProductosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(EliminarBtn)
+                                    .addComponent(ModificarBtn)))
+                            .addGroup(ProductosLayout.createSequentialGroup()
+                                .addGap(45, 45, 45)
+                                .addComponent(Editardatosbutton)))
+                        .addGap(0, 29, Short.MAX_VALUE))
                     .addGroup(ProductosLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 401, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(37, Short.MAX_VALUE))
+                .addContainerGap(35, Short.MAX_VALUE))
         );
 
         Tabla.addTab("tab3", Productos);
@@ -1291,6 +1342,114 @@ private void llenarTablaUsuarios() {
 
         Tabla.addTab("tab6", Config);
 
+        jPanel5.setBackground(new java.awt.Color(187, 119, 0));
+
+        Datostbld.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane5.setViewportView(Datostbld);
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel9.setText("Adiccionar datos");
+
+        MarcaTxT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                MarcaTxTActionPerformed(evt);
+            }
+        });
+
+        AñadirBtn.setText("Añadir");
+        AñadirBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AñadirBtnActionPerformed(evt);
+            }
+        });
+
+        EliminarBtn2.setText("Eliminar");
+        EliminarBtn2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EliminarBtn2ActionPerformed(evt);
+            }
+        });
+
+        jLabel10.setText("Marca");
+
+        jLabel11.setText("Color");
+
+        jLabel12.setText("Material");
+
+        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
+        jPanel5.setLayout(jPanel5Layout);
+        jPanel5Layout.setHorizontalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGap(37, 37, 37)
+                                .addComponent(AñadirBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(EliminarBtn2))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGap(24, 24, 24)
+                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel5Layout.createSequentialGroup()
+                                        .addGap(0, 3, Short.MAX_VALUE)
+                                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
+                                        .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel5Layout.createSequentialGroup()
+                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                        .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGap(24, 24, 24)
+                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(MarcaTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(51, 51, 51))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(85, 85, 85)))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel5Layout.setVerticalGroup(
+            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(78, 78, 78)
+                .addComponent(jLabel9)
+                .addGap(55, 55, 55)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(MarcaTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel10))
+                .addGap(38, 38, 38)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel11)
+                    .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(33, 33, 33)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel12))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(AñadirBtn)
+                    .addComponent(EliminarBtn2))
+                .addGap(57, 57, 57))
+        );
+
+        Tabla.addTab("tab7", jPanel5);
+
         jPanel1.add(Tabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 800, 490));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -1342,29 +1501,20 @@ private void llenarTablaUsuarios() {
         yMouse = evt.getY();
     }//GEN-LAST:event_jPanel3MousePressed
 
-    private void CantidadTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CantidadTxtActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_CantidadTxtActionPerformed
-
-    private void PrecioTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PrecioTxtActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_PrecioTxtActionPerformed
-
-    private void DOCtxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DOCtxtActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_DOCtxtActionPerformed
-
-    private void DocTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocTxTActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_DocTxTActionPerformed
-
     private void CerrarSesionBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CerrarSesionBtnActionPerformed
-        // Cerrar la ventana principal
-    this.dispose();
+int confirm = JOptionPane.showConfirmDialog(
+    this,
+    "¿Estás seguro que deseas cerrar sesión?",
+    "Confirmar cierre de sesión",
+    JOptionPane.YES_NO_OPTION,
+    JOptionPane.QUESTION_MESSAGE
+);
 
-    // Abrir la ventana de inicio de sesión
-    Login login = new Login(); // Suponiendo que tienes una clase llamada "Login"
-    login.setVisible(true);
+if (confirm == JOptionPane.YES_OPTION) {
+    this.dispose(); // Cierra la ventana actual
+    Login login = new Login(); 
+    login.setVisible(true); // Abre la ventana de login
+}
     }//GEN-LAST:event_CerrarSesionBtnActionPerformed
 
     private void ClientesBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClientesBtnActionPerformed
@@ -1379,287 +1529,442 @@ private void llenarTablaUsuarios() {
         Tabla.setSelectedIndex(5);
     }//GEN-LAST:event_UsuariosBtnActionPerformed
 
-    private void ConsultarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultarBtnActionPerformed
-        int codigo;
-    try {
-        codigo = Integer.parseInt(CodigoTxT.getText());
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Ingrese un código válido", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-    
-    Producto producto = app.consultarProducto(codigo);
-    
-    if (producto != null) {
-        // Llenar los campos con la información del producto
-        DescripcionTxT.setText(producto.getDescripcion());
-        PrecioTxT.setText(String.valueOf(producto.getPrecio()));
-        CantidadTxT.setText(String.valueOf(producto.getCantidad()));
-        //MaterialComboBox.setText(String.valueOf(producto.getMaterial())); // corregido
-        //MarcaComboBox.se(String.valueOf(producto.getMarca()));       // corregido
-        NombTxT.setText(producto.getNombre());
-        //ColorComboBox.setText(String.valueOf(producto.getColor()));
-    } else {
-        JOptionPane.showMessageDialog(this, "Producto no encontrado", "Información", JOptionPane.INFORMATION_MESSAGE);
-    }
-    }//GEN-LAST:event_ConsultarBtnActionPerformed
+    private void ActualizarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarBtnActionPerformed
+        // Obtener los datos ingresados en los campos de texto
+        String nombreUsuario = UsuarioTxT.getText();
+        String nuevaContraseña = new String(ContraseñaTxT.getText());
+        String nombre = NombreUsrTxT.getText();
+        String apellido = ApellidoTxT.getText();
 
-    private void RegistrarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegistrarBtnActionPerformed
-        // Obtener los datos de los campos de texto
-    String codigo = CodigoTxT.getText();
-    String descripcion = DescripcionTxT.getText();
-    String precio = PrecioTxT.getText();
-    String cantidad = CantidadTxT.getText();
-    String nombre = NombTxT.getText();
-    
-    Object selectedMarcaObj = MarcaComboBox.getSelectedItem();
-    Object selectedMaterialObj = MaterialComboBox.getSelectedItem();
-    Object selectedColorObj = ColorComboBox.getSelectedItem();
-
-    // Verificar que todos los campos estén llenos
-    if (codigo.isEmpty() || descripcion.isEmpty() || precio.isEmpty() || cantidad.isEmpty() || selectedMaterialObj.toString().isEmpty() || selectedMarcaObj.toString().isEmpty() || nombre.isEmpty() || selectedColorObj.toString().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Rellenar todos los campos", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    try {
-        
-        MarcaItem idItem = (MarcaItem) selectedMarcaObj;
-        MaterialItem materialItem = (MaterialItem) selectedMaterialObj;
-ColorItem colorItem = (ColorItem) selectedColorObj;
-        // Convertir campos numéricos
-        int codigoInt = Integer.parseInt(codigo);
-        int precioInt = Integer.parseInt(precio);
-        int cantidadInt = Integer.parseInt(cantidad);
-        int materialInt = materialItem.getIdMaterial(); // corregido
-        int marcaInt = idItem.getIdMarca();       // corregido
-        int colorInt = colorItem.getIdColor();       // corregido
-
-        // Crear el objeto Producto
-        Producto nuevoProducto = new Producto(codigoInt, descripcion, precioInt, cantidadInt, materialInt, marcaInt, nombre, colorInt);
-
-        // Intentar registrar el producto
-        boolean registrado = app.registrarProducto(nuevoProducto);
-        
-        // Mostrar mensaje basado en el resultado del registro
-        if (registrado) {
-            JOptionPane.showMessageDialog(this, "Producto registrado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            DefaultTableModel modeloTabla = (DefaultTableModel) ProductosTbld.getModel();
-            modeloTabla.addRow(new Object[]{
-                nuevoProducto.getCodigo(),
-                nuevoProducto.getDescripcion(),
-                nuevoProducto.getPrecio(),
-                nuevoProducto.getCantidad(),
-                nuevoProducto.getMaterial(),
-                nuevoProducto.getMarca(),
-                nuevoProducto.getNombre(),
-                nuevoProducto.getColor()
-            });
-            limpiarCampos(); // Limpiar los campos después de registrar
-        } else {
-            if (app.productoExiste(codigoInt)) {
-                JOptionPane.showMessageDialog(this, "El producto ya está registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al registrar el producto", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
-    } catch (NumberFormatException ex) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingrese valores numéricos válidos para Código, Precio, Cantidad, Material, Marca y Color", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    }//GEN-LAST:event_RegistrarBtnActionPerformed
-
-    private void ModificarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModificarBtnActionPerformed
-        try {
-        int codigo = Integer.parseInt(CodigoTxT.getText());
-        String descripcion = DescripcionTxT.getText();
-        int precio = Integer.parseInt(PrecioTxT.getText());
-        int cantidad = Integer.parseInt(CantidadTxT.getText());
-        String nombre = NombTxT.getText();
-
-        // Obtener los objetos seleccionados en los ComboBox
-        MaterialItem materialItem = (MaterialItem) MaterialComboBox.getSelectedItem();
-        MarcaItem marcaItem = (MarcaItem) MarcaComboBox.getSelectedItem();
-        ColorItem colorItem = (ColorItem) ColorComboBox.getSelectedItem();
-
-        if (nombre.isEmpty() || materialItem == null || marcaItem == null || colorItem == null) {
-            JOptionPane.showMessageDialog(this, "Todos los campos deben estar completos", "Error", JOptionPane.WARNING_MESSAGE);
+        // Verificar que el nombre de usuario no esté vacío (es nuestro identificador único)
+        if (nombreUsuario.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre de usuario a actualizar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Crear el objeto Producto con objetos completos
-        Producto producto = new Producto(
-            codigo,
-            descripcion,
-            precio,
-            cantidad,
-            materialItem,
-            marcaItem,
-            nombre,
-            colorItem
-        );
-
-        if (app.modificarProducto(producto)) {
-            JOptionPane.showMessageDialog(this, "Producto modificado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            cargarProductosEnTabla(); // Actualizar la tabla
-            limpiarCampos(); // Limpia los campos luego de actualizar
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al modificar el producto", "Error", JOptionPane.ERROR_MESSAGE);
+        // Verificar que los demás campos no estén vacíos
+        if (nuevaContraseña.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos para actualizar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Ingrese valores numéricos válidos para Código, Precio y Cantidad", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    }//GEN-LAST:event_ModificarBtnActionPerformed
 
-    private void EliminarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarBtnActionPerformed
-        // Verificar si el campo de código está vacío
-    if (CodigoTxT.getText().isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingrese el código del producto a eliminar", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-    
-    int codigo;
-    try {
-        // Obtener el código del producto a eliminar
-        codigo = Integer.parseInt(CodigoTxT.getText());
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "Ingrese un código válido", "Error", JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        // Crear una instancia del usuario con los datos actualizados
+        Usuario usuario = new Usuario(nombreUsuario, nuevaContraseña, nombre, apellido);
 
-    // Confirmar la eliminación
-    int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar este producto?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
-    if (confirmacion == JOptionPane.YES_OPTION) {
-        // Llamar al método de eliminar producto
-        if (app.eliminarProducto(codigo)) {
-            JOptionPane.showMessageDialog(this, "Producto eliminado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            cargarProductosEnTabla(); // Actualizar la tabla después de eliminar el producto
-            limpiarCampos(); // Limpiar los campos de texto después de la eliminación
+        // Intentar actualizar el usuario en la base de datos
+        boolean actualizado = conexion.actualizarUsuario(usuario);
+        llenarTablaUsuarios();
+        // Mostrar mensaje basado en el resultado de la actualización
+        if (actualizado) {
+            JOptionPane.showMessageDialog(this, "Usuario actualizado exitosamente.", "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "Error al eliminar el producto o el producto no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al actualizar el usuario. Verifique si el usuario existe.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    }//GEN-LAST:event_EliminarBtnActionPerformed
-
-    private void ConsulBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsulBtnActionPerformed
-        // Obtener el nombre de usuario ingresado
-    String nombreUsuario = UsuarioTxT.getText();
-
-    // Verificar que el campo no esté vacío
-    if (nombreUsuario.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre de usuario a consultar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    Usuario usuario = conexion.obtenerUsuarioPorNombre(nombreUsuario);
-
-    // Verificar si el usuario existe
-    if (usuario != null) {
-        // Mostrar los datos del usuario en los campos de texto
-        ContraseñaTxT.setText(usuario.getContraseña());  // Puede que quieras encriptar o no mostrar directamente la contraseña
-        NombreUsrTxT.setText(usuario.getNombre());
-        ApellidoTxT.setText(usuario.getApellido());
-        JOptionPane.showMessageDialog(this, "Usuario encontrado", "Consulta exitosa", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        // Mostrar mensaje si el usuario no existe
-        JOptionPane.showMessageDialog(this, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
-        
-        // Limpiar los campos en caso de que el usuario no exista
-        ContraseñaTxT.setText("");
-        NombreUsrTxT.setText("");
-        ApellidoTxT.setText("");
-    }
-    }//GEN-LAST:event_ConsulBtnActionPerformed
-
-    private void ActualizarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ActualizarBtnActionPerformed
-        // Obtener los datos ingresados en los campos de texto
-    String nombreUsuario = UsuarioTxT.getText();
-    String nuevaContraseña = new String(ContraseñaTxT.getText());
-    String nombre = NombreUsrTxT.getText();
-    String apellido = ApellidoTxT.getText();
-
-    // Verificar que el nombre de usuario no esté vacío (es nuestro identificador único)
-    if (nombreUsuario.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre de usuario a actualizar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Verificar que los demás campos no estén vacíos
-    if (nuevaContraseña.isEmpty() || nombre.isEmpty() || apellido.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos para actualizar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
-
-    // Crear una instancia del usuario con los datos actualizados
-    Usuario usuario = new Usuario(nombreUsuario, nuevaContraseña, nombre, apellido);
-
-    // Intentar actualizar el usuario en la base de datos
-    boolean actualizado = conexion.actualizarUsuario(usuario);
-llenarTablaUsuarios();
-    // Mostrar mensaje basado en el resultado de la actualización
-    if (actualizado) {
-        JOptionPane.showMessageDialog(this, "Usuario actualizado exitosamente.", "Actualización exitosa", JOptionPane.INFORMATION_MESSAGE);
-    } else {
-        JOptionPane.showMessageDialog(this, "Error al actualizar el usuario. Verifique si el usuario existe.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
     }//GEN-LAST:event_ActualizarBtnActionPerformed
 
     private void ElimBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ElimBtnActionPerformed
         // Obtener el nombre de usuario ingresado
-    String nombreUsuario = UsuarioTxT.getText();
+        String nombreUsuario = UsuarioTxT.getText();
 
-    // Verificar que el campo no esté vacío
-    if (nombreUsuario.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre de usuario a eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        return;
-    }
+        // Verificar que el campo no esté vacío
+        if (nombreUsuario.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre de usuario a eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
 
-    // Confirmación antes de eliminar
-    int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar el usuario?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        // Confirmación antes de eliminar
+        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar el usuario?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
-    if (confirmacion == JOptionPane.YES_OPTION) {
-        // Intentar eliminar el usuario en la base de datos
-        boolean eliminado = conexion.eliminarUsuario(nombreUsuario);
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            // Intentar eliminar el usuario en la base de datos
+            boolean eliminado = conexion.eliminarUsuario(nombreUsuario);
 
-        // Mostrar mensaje basado en el resultado de la eliminación
-        if (eliminado) {
-            JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente.", "Eliminación exitosa", JOptionPane.INFORMATION_MESSAGE);
-            llenarTablaUsuarios();
-            limpiarCampos();
-            // Limpiar el campo de texto después de la eliminación
-            UsuarioTxT.setText("");
+            // Mostrar mensaje basado en el resultado de la eliminación
+            if (eliminado) {
+                JOptionPane.showMessageDialog(this, "Usuario eliminado exitosamente.", "Eliminación exitosa", JOptionPane.INFORMATION_MESSAGE);
+                llenarTablaUsuarios();
+                limpiarCampos();
+                // Limpiar el campo de texto después de la eliminación
+                UsuarioTxT.setText("");
+                ContraseñaTxT.setText("");
+                NombreUsrTxT.setText("");
+                ApellidoTxT.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el usuario. Verifique si el usuario existe.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_ElimBtnActionPerformed
+
+    private void ConsulBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsulBtnActionPerformed
+        // Obtener el nombre de usuario ingresado
+        String nombreUsuario = UsuarioTxT.getText();
+
+        // Verificar que el campo no esté vacío
+        if (nombreUsuario.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre de usuario a consultar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Usuario usuario = conexion.obtenerUsuarioPorNombre(nombreUsuario);
+
+        // Verificar si el usuario existe
+        if (usuario != null) {
+            // Mostrar los datos del usuario en los campos de texto
+            ContraseñaTxT.setText(usuario.getContraseña());  // Puede que quieras encriptar o no mostrar directamente la contraseña
+            NombreUsrTxT.setText(usuario.getNombre());
+            ApellidoTxT.setText(usuario.getApellido());
+            JOptionPane.showMessageDialog(this, "Usuario encontrado", "Consulta exitosa", JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            // Mostrar mensaje si el usuario no existe
+            JOptionPane.showMessageDialog(this, "Usuario no encontrado.", "Error", JOptionPane.ERROR_MESSAGE);
+
+            // Limpiar los campos en caso de que el usuario no exista
             ContraseñaTxT.setText("");
             NombreUsrTxT.setText("");
             ApellidoTxT.setText("");
-        } else {
-            JOptionPane.showMessageDialog(this, "Error al eliminar el usuario. Verifique si el usuario existe.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    }
-    }//GEN-LAST:event_ElimBtnActionPerformed
+    }//GEN-LAST:event_ConsulBtnActionPerformed
 
     private void RegisBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegisBtnActionPerformed
         // Crear una instancia de la interfaz Registro
-    Registro registroInterfaz = new Registro();
-    
-    // Hacer visible la interfaz de registro
-    registroInterfaz.setVisible(true);
-    this.setVisible(false);
-    }//GEN-LAST:event_RegisBtnActionPerformed
+        Registro registroInterfaz = new Registro();
 
-    private void VentaTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VentaTxTActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_VentaTxTActionPerformed
+        // Hacer visible la interfaz de registro
+        registroInterfaz.setVisible(true);
+        this.setVisible(false);
+    }//GEN-LAST:event_RegisBtnActionPerformed
 
     private void ClienteTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClienteTxTActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_ClienteTxTActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void VentaTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_VentaTxTActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_VentaTxTActionPerformed
 
     private void MaterialComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MaterialComboBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_MaterialComboBoxActionPerformed
+
+    private void MarcaComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MarcaComboBoxActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MarcaComboBoxActionPerformed
+
+    private void ModificarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModificarBtnActionPerformed
+        try {
+            int codigo = Integer.parseInt(CodigoTxT.getText());
+            String descripcion = DescripcionTxT.getText();
+            int precio = Integer.parseInt(PrecioTxT.getText());
+            int cantidad = Integer.parseInt(CantidadTxT.getText());
+            String nombre = NombTxT.getText();
+
+            // Obtener los objetos seleccionados en los ComboBox
+            MaterialItem materialItem = (MaterialItem) MaterialComboBox.getSelectedItem();
+            MarcaItem marcaItem = (MarcaItem) MarcaComboBox.getSelectedItem();
+            ColorItem colorItem = (ColorItem) ColorComboBox.getSelectedItem();
+
+            if (nombre.isEmpty() || materialItem == null || marcaItem == null || colorItem == null) {
+                JOptionPane.showMessageDialog(this, "Todos los campos deben estar completos", "Error", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Crear el objeto Producto con objetos completos
+            Producto producto = new Producto(
+                codigo,
+                descripcion,
+                precio,
+                cantidad,
+                materialItem,
+                marcaItem,
+                nombre,
+                colorItem
+            );
+
+            if (app.modificarProducto(producto)) {
+                JOptionPane.showMessageDialog(this, "Producto modificado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                cargarProductosEnTabla(); // Actualizar la tabla
+                limpiarCampos(); // Limpia los campos luego de actualizar
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al modificar el producto", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Ingrese valores numéricos válidos para Código, Precio y Cantidad", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_ModificarBtnActionPerformed
+
+    private void EliminarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarBtnActionPerformed
+        // Verificar si el campo de código está vacío
+        if (CodigoTxT.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese el código del producto a eliminar", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int codigo;
+        try {
+            // Obtener el código del producto a eliminar
+            codigo = Integer.parseInt(CodigoTxT.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Ingrese un código válido", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Confirmar la eliminación
+        int confirmacion = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar este producto?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            // Llamar al método de eliminar producto
+            if (app.eliminarProducto(codigo)) {
+                JOptionPane.showMessageDialog(this, "Producto eliminado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                cargarProductosEnTabla(); // Actualizar la tabla después de eliminar el producto
+                limpiarCampos(); // Limpiar los campos de texto después de la eliminación
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al eliminar el producto o el producto no existe", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_EliminarBtnActionPerformed
+
+    private void ConsultarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConsultarBtnActionPerformed
+        int codigo;
+        try {
+            codigo = Integer.parseInt(CodigoTxT.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Ingrese un código válido", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Producto producto = app.consultarProducto(codigo);
+
+        if (producto != null) {
+            // Llenar los campos con la información del producto
+            DescripcionTxT.setText(producto.getDescripcion());
+            PrecioTxT.setText(String.valueOf(producto.getPrecio()));
+            CantidadTxT.setText(String.valueOf(producto.getCantidad()));
+            NombTxT.setText(producto.getNombre());
+
+            // Establecer selección en los ComboBox
+            MaterialComboBox.setSelectedItem(producto.getMaterial());
+            MarcaComboBox.setSelectedItem(producto.getMarca());
+            ColorComboBox.setSelectedItem(producto.getColor());
+
+        } else {
+            JOptionPane.showMessageDialog(this, "Producto no encontrado", "Información", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }//GEN-LAST:event_ConsultarBtnActionPerformed
+
+    private void RegistrarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RegistrarBtnActionPerformed
+        // Obtener los datos de los campos de texto
+        String codigo = CodigoTxT.getText();
+        String descripcion = DescripcionTxT.getText();
+        String precio = PrecioTxT.getText();
+        String cantidad = CantidadTxT.getText();
+        String nombre = NombTxT.getText();
+
+        Object selectedMarcaObj = MarcaComboBox.getSelectedItem();
+        Object selectedMaterialObj = MaterialComboBox.getSelectedItem();
+        Object selectedColorObj = ColorComboBox.getSelectedItem();
+
+        // Verificar que todos los campos estén llenos
+        if (codigo.isEmpty() || descripcion.isEmpty() || precio.isEmpty() || cantidad.isEmpty() || selectedMaterialObj.toString().isEmpty() || selectedMarcaObj.toString().isEmpty() || nombre.isEmpty() || selectedColorObj.toString().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Rellenar todos los campos", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+
+            MarcaItem idItem = (MarcaItem) selectedMarcaObj;
+            MaterialItem materialItem = (MaterialItem) selectedMaterialObj;
+            ColorItem colorItem = (ColorItem) selectedColorObj;
+            // Convertir campos numéricos
+            int codigoInt = Integer.parseInt(codigo);
+            int precioInt = Integer.parseInt(precio);
+            int cantidadInt = Integer.parseInt(cantidad);
+            int materialInt = materialItem.getIdMaterial(); // corregido
+            int marcaInt = idItem.getIdMarca();       // corregido
+            int colorInt = colorItem.getIdColor();       // corregido
+
+            // Crear el objeto Producto
+            Producto nuevoProducto = new Producto(codigoInt, descripcion, precioInt, cantidadInt, materialInt, marcaInt, nombre, colorInt);
+
+            // Intentar registrar el producto
+            boolean registrado = app.registrarProducto(nuevoProducto);
+
+            // Mostrar mensaje basado en el resultado del registro
+            if (registrado) {
+                JOptionPane.showMessageDialog(this, "Producto registrado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                DefaultTableModel modeloTabla = (DefaultTableModel) ProductosTbld.getModel();
+                modeloTabla.addRow(new Object[]{
+                    nuevoProducto.getCodigo(),
+                    nuevoProducto.getDescripcion(),
+                    nuevoProducto.getPrecio(),
+                    nuevoProducto.getCantidad(),
+                    nuevoProducto.getMaterial(),
+                    nuevoProducto.getMarca(),
+                    nuevoProducto.getNombre(),
+                    nuevoProducto.getColor()
+                });
+                limpiarCampos(); // Limpiar los campos después de registrar
+            } else {
+                if (app.productoExiste(codigoInt)) {
+                    JOptionPane.showMessageDialog(this, "El producto ya está registrado", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this, "Error al registrar el producto", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese valores numéricos válidos para Código, Precio, Cantidad, Material, Marca y Color", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_RegistrarBtnActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void DocTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocTxTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DocTxTActionPerformed
+
+    private void DOCtxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DOCtxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DOCtxtActionPerformed
+
+    private void PrecioTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PrecioTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_PrecioTxtActionPerformed
+
+    private void CantidadTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CantidadTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_CantidadTxtActionPerformed
+
+    private void EditardatosbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditardatosbuttonActionPerformed
+Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
+
+    private void AñadirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirBtnActionPerformed
+        String nuevaMarca = MarcaTxT.getText().trim();
+    String nuevoColor = ColorTxT.getText().trim();
+    String nuevoMaterial = MaterialTxT.getText().trim();
+
+    boolean marcaInsertada = conexion.insertarNuevaMarca(nuevaMarca);
+    boolean colorInsertado = conexion.insertarNuevoColor(nuevoColor);
+    boolean materialInsertado = conexion.insertarNuevoMaterial(nuevoMaterial);
+
+    if (marcaInsertada || colorInsertado || materialInsertado) {
+        cargarMarcas();
+        cargarColores();
+        cargarMateriales();
+
+        // Seleccionar automáticamente la nueva marca
+        for (int i = 0; i < MarcaComboBox.getItemCount(); i++) {
+            MarcaItem item = MarcaComboBox.getItemAt(i);
+            if (item.getNombre().equalsIgnoreCase(nuevaMarca)) {
+                MarcaComboBox.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        // Seleccionar automáticamente el nuevo color
+        for (int i = 0; i < ColorComboBox.getItemCount(); i++) {
+            ColorItem item = ColorComboBox.getItemAt(i);
+            if (item.getNombre().equalsIgnoreCase(nuevoColor)) {
+                ColorComboBox.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        // Seleccionar automáticamente el nuevo material
+        for (int i = 0; i < MaterialComboBox.getItemCount(); i++) {
+            MaterialItem item = MaterialComboBox.getItemAt(i);
+            if (item.getNombre().equalsIgnoreCase(nuevoMaterial)) {
+                MaterialComboBox.setSelectedIndex(i);
+                break;
+            }
+        }
+
+        JOptionPane.showMessageDialog(this, "Datos insertados y seleccionados correctamente.");
+
+        // Limpiar campos
+        MarcaTxT.setText("");
+        ColorTxT.setText("");
+        MaterialTxT.setText("");
+        LlenarTabladatos(); // actualiza tabla
+
+    } else {
+        JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar los datos.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+        
+        
+    }//GEN-LAST:event_AñadirBtnActionPerformed
+
+    private void MarcaTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MarcaTxTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_MarcaTxTActionPerformed
+
+    private void NombTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombTxTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NombTxTActionPerformed
+
+    private void EliminarBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarBtn2ActionPerformed
+ String marca = MarcaTxT.getText().trim();
+    String color = ColorTxT.getText().trim();
+    String material = MaterialTxT.getText().trim();
+
+    if (marca.isEmpty() && color.isEmpty() && material.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Escriba una marca, color o material para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    boolean eliminado = false;
+
+    // Eliminar marca si fue ingresada
+    if (!marca.isEmpty()) {
+        for (MarcaItem m : conexion.obtenerTodasLasMarcas()) {
+            if (m.getNombre().equalsIgnoreCase(marca)) {
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar marca '" + marca + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    eliminado = conexion.eliminarMarca(m.getIdMarca());
+                }
+                break;
+            }
+        }
+    }
+
+    // Eliminar color si fue ingresado
+    if (!color.isEmpty()) {
+        for (ColorItem c : conexion.obtenerTodosLosColores()) {
+            if (c.getNombre().equalsIgnoreCase(color)) {
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar color '" + color + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    eliminado = conexion.eliminarColor(c.getIdColor());
+                }
+                break;
+            }
+        }
+    }
+
+    // Eliminar material si fue ingresado
+    if (!material.isEmpty()) {
+        for (MaterialItem m : conexion.obtenerTodosLosMateriales()) {
+            if (m.getNombre().equalsIgnoreCase(material)) {
+                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar material '" + material + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    eliminado = conexion.eliminarMaterial(m.getIdMaterial());
+                }
+                break;
+            }
+        }
+    }
+
+    if (eliminado) {
+        JOptionPane.showMessageDialog(this, "Elemento eliminado correctamente.");
+        // Actualizar interfaz
+        cargarMarcas();
+        cargarColores();
+        cargarMateriales();
+        LlenarTabladatos();
+        MarcaTxT.setText("");
+        ColorTxT.setText("");
+        MaterialTxT.setText("");
+    } else {
+        JOptionPane.showMessageDialog(this, "No se encontró el elemento o no se pudo eliminar.", "Información", JOptionPane.INFORMATION_MESSAGE);
+    }    }//GEN-LAST:event_EliminarBtn2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1698,6 +2003,7 @@ llenarTablaUsuarios();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ActualizarBtn;
     private javax.swing.JTextField ApellidoTxT;
+    private javax.swing.JButton AñadirBtn;
     private javax.swing.JLabel Cantidad;
     private javax.swing.JLabel CantidadPro;
     private javax.swing.JTextField CantidadTxT;
@@ -1712,6 +2018,7 @@ llenarTablaUsuarios();
     private javax.swing.JTextField CodigoTxT;
     private javax.swing.JTextField CodigoTxt;
     private javax.swing.JComboBox<ColorItem> ColorComboBox;
+    private javax.swing.JTextField ColorTxT;
     private javax.swing.JPanel Config;
     private javax.swing.JButton ConsulBtn;
     private javax.swing.JButton ConsultarBtn;
@@ -1719,18 +2026,23 @@ llenarTablaUsuarios();
     private javax.swing.JTextField ContraseñaTxT;
     private javax.swing.JLabel DOC;
     private javax.swing.JTextField DOCtxt;
+    private javax.swing.JTable Datostbld;
     private javax.swing.JLabel DescripPro;
     private javax.swing.JTextField DescripTxt;
     private javax.swing.JLabel Descripcion;
     private javax.swing.JTextField DescripcionTxT;
     private javax.swing.JTextField DocTxT;
     private javax.swing.JLabel Documento;
+    private javax.swing.JButton Editardatosbutton;
     private javax.swing.JButton ElimBtn;
     private javax.swing.JButton EliminarBtn;
+    private javax.swing.JButton EliminarBtn2;
     private javax.swing.JPanel ExitBtn;
     private javax.swing.JLabel ExitTxT;
     private javax.swing.JComboBox<MarcaItem> MarcaComboBox;
+    private javax.swing.JTextField MarcaTxT;
     private javax.swing.JComboBox<MaterialItem> MaterialComboBox;
+    private javax.swing.JTextField MaterialTxT;
     private javax.swing.JButton ModificarBtn;
     private javax.swing.JLabel Nom;
     private javax.swing.JTextField NomTxT;
@@ -1782,6 +2094,9 @@ llenarTablaUsuarios();
     private javax.swing.JButton jButton8;
     private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -1789,10 +2104,13 @@ llenarTablaUsuarios();
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -1800,9 +2118,6 @@ llenarTablaUsuarios();
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
     // End of variables declaration//GEN-END:variables
-private void MarcaComboBoxActionPerformed(java.awt.event.ActionEvent evt) {                                            
-    // No necesitas poner nada aquí si no quieres hacer nada al seleccionar una marca
 }
-}
+

@@ -137,7 +137,6 @@ public class Conexion {
 
             pstmt.setInt(1, codigo);
             ResultSet rs = pstmt.executeQuery();
-//me duelen los ojos
             if (rs.next()) {
                 String descripcion = rs.getString("descripcion");
                 int precio = rs.getInt("precio");
@@ -520,5 +519,79 @@ public class Conexion {
         }
         return materiales;
     }
+     
+     public boolean insertarNuevaMarca(String nombre) {
+    String sql = "INSERT INTO marca (nombre) VALUES (?)";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, nombre);
+        pstmt.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Error al insertar nueva marca: " + e.getMessage());
+        return false;
+    }
+}
+
+public boolean insertarNuevoColor(String nombre) {
+    String sql = "INSERT INTO color (nombre) VALUES (?)";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, nombre);
+        pstmt.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Error al insertar nuevo color: " + e.getMessage());
+        return false;
+    }
+}
+
+public boolean insertarNuevoMaterial(String nombre) {
+    String sql = "INSERT INTO material (nombre) VALUES (?)";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, nombre);
+        pstmt.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Error al insertar nuevo material: " + e.getMessage());
+        return false;
+    }
+}
+public boolean eliminarMarca(int idMarca) {
+    String sql = "DELETE FROM marca WHERE id_marca = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idMarca);
+        pstmt.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Error al eliminar marca: " + e.getMessage());
+        return false;
+    }
+}
+
+public boolean eliminarColor(int idColor) {
+    String sql = "DELETE FROM color WHERE id_color = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idColor);
+        pstmt.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Error al eliminar color: " + e.getMessage());
+        return false;
+    }
+}
+
+public boolean eliminarMaterial(int idMaterial) {
+    String sql = "DELETE FROM material WHERE id_material = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idMaterial);
+        pstmt.executeUpdate();
+        return true;
+    } catch (SQLException e) {
+        System.out.println("Error al eliminar material: " + e.getMessage());
+        return false;
+    }
+}
+
+
+     
 }
 

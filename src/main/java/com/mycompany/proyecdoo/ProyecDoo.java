@@ -1,16 +1,14 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- */
-
 package com.mycompany.proyecdoo;
 
-/**
- *
- * @author jodas
- */
+import javax.swing.SwingUtilities;
+import Vista.Login;
+
 public class ProyecDoo {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        SwingUtilities.invokeLater(() -> {
+            new Login().setVisible(true);
+        });
     }
+
 }

@@ -1,12 +1,14 @@
 Vista\Login.class
 Vista\Principal$20.class
 Vista\Principal$17.class
+Vista\Principal$30.class
 Vista\Registro$7.class
 Vista\Principal$10.class
 Vista\Principal$9.class
 Vista\Login$3.class
 Vista\Principal$27.class
 Modelo\MarcaItem.class
+Vista\Principal$33.class
 Vista\Registro$11.class
 Modelo\Conexion.class
 Vista\Principal$2.class
@@ -22,10 +24,12 @@ Vista\Principal$18.class
 Vista\Registro$6.class
 Vista\Principal$23.class
 com\mycompany\proyecdoo\ProyecDoo.class
+Vista\Principal$29.class
 Vista\Principal$14.class
 Vista\Login$5.class
 Vista\Registro$10.class
 Modelo\Producto.class
+Vista\Principal$31.class
 Vista\Login$2.class
 Vista\Principal$11.class
 Vista\Principal$1.class
@@ -38,6 +42,7 @@ Vista\Registro.class
 Vista\Registro$5.class
 Modelo\Cliente.class
 Vista\Principal$7.class
+Vista\Principal$32.class
 Vista\Principal$22.class
 Vista\Login$1.class
 Vista\Principal$15.class
