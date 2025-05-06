@@ -155,27 +155,32 @@ private void llenarTablaUsuarios() {
 
 private void LlenarTabladatos() {
     DefaultTableModel modelo = new DefaultTableModel();
-    modelo.setRowCount(0);
-    modelo.addColumn("Marcas");
-    modelo.addColumn("Colores");
-    modelo.addColumn("Materiales");
+modelo.addColumn("Marcas");
+modelo.addColumn("Colores");
+modelo.addColumn("Materiales");
 
-    List<ColorItem> colores = conexion.obtenerTodosLosColores();
-    List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
-    List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
+List<ColorItem> colores = conexion.obtenerTodosLosColores();
+List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
 
 
-    int max = Math.max(marcas.size(), Math.max(colores.size(), materiales.size()));
+if (marcas.isEmpty() && colores.isEmpty() && materiales.isEmpty()) {
+    Datostbld.setModel(modelo); // Asignamos modelo vacío sin filas
+    return;
+}
 
-    for (int i = 0; i < max; i++) {
-        String marca = (i < marcas.size()) ? marcas.get(i).getNombre() : "";
-        String color = (i < colores.size()) ? colores.get(i).getNombre() : "";
-        String material = (i < materiales.size()) ? materiales.get(i).getNombre() : "";
-        modelo.addRow(new Object[]{marca, color, material});
-    }
+int max = Math.max(marcas.size(), Math.max(colores.size(), materiales.size()));
+for (int i = 0; i < max; i++) {
+    String marca = (i < marcas.size()) ? marcas.get(i).getNombre() : "";
+    String color = (i < colores.size()) ? colores.get(i).getNombre() : "";
+    String material = (i < materiales.size()) ? materiales.get(i).getNombre() : "";
+    // Evita agregar filas completamente vacías
+    if (marca.isEmpty() && color.isEmpty() && material.isEmpty()) continue;
+    modelo.addRow(new Object[]{marca, color, material});
+}
 
-    // Asignar el modelo a la tabla
-    Datostbld.setModel(modelo);
+// Asignar el modelo a la tabla
+Datostbld.setModel(modelo);
 }
     Conexion app = new Conexion();
     int xMouse, yMouse;
@@ -1838,20 +1843,58 @@ if (confirm == JOptionPane.YES_OPTION) {
 Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
 
     private void AñadirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirBtnActionPerformed
-        String nuevaMarca = MarcaTxT.getText().trim();
+         String nuevaMarca = MarcaTxT.getText().trim();
     String nuevoColor = ColorTxT.getText().trim();
     String nuevoMaterial = MaterialTxT.getText().trim();
 
-    boolean marcaInsertada = conexion.insertarNuevaMarca(nuevaMarca);
-    boolean colorInsertado = conexion.insertarNuevoColor(nuevoColor);
-    boolean materialInsertado = conexion.insertarNuevoMaterial(nuevoMaterial);
+    if ((nuevaMarca.isEmpty() && nuevoColor.isEmpty() && nuevoMaterial.isEmpty()) ||
+        nuevaMarca.equalsIgnoreCase("nombre") || nuevoColor.equalsIgnoreCase("nombre") || nuevoMaterial.equalsIgnoreCase("nombre")) {
+        JOptionPane.showMessageDialog(this, "Por favor, ingrese al menos un valor válido para añadir.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
 
-    if (marcaInsertada || colorInsertado || materialInsertado) {
+
+    boolean insertado = false;
+
+    // Verificar si ya existe la marca
+    if (!nuevaMarca.isEmpty()) {
+        boolean existe = conexion.obtenerTodasLasMarcas().stream()
+                         .anyMatch(m -> m.getNombre().equalsIgnoreCase(nuevaMarca));
+        if (existe) {
+            JOptionPane.showMessageDialog(this, "La marca '" + nuevaMarca + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        } else {
+            insertado |= conexion.insertarNuevaMarca(nuevaMarca);
+        }
+    }
+
+    // Verificar si ya existe el color
+    if (!nuevoColor.isEmpty()) {
+        boolean existe = conexion.obtenerTodosLosColores().stream()
+                         .anyMatch(c -> c.getNombre().equalsIgnoreCase(nuevoColor));
+        if (existe) {
+            JOptionPane.showMessageDialog(this, "El color '" + nuevoColor + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        } else {
+            insertado |= conexion.insertarNuevoColor(nuevoColor);
+        }
+    }
+
+    // Verificar si ya existe el material
+    if (!nuevoMaterial.isEmpty()) {
+        boolean existe = conexion.obtenerTodosLosMateriales().stream()
+                         .anyMatch(m -> m.getNombre().equalsIgnoreCase(nuevoMaterial));
+        if (existe) {
+            JOptionPane.showMessageDialog(this, "El material '" + nuevoMaterial + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        } else {
+            insertado |= conexion.insertarNuevoMaterial(nuevoMaterial);
+        }
+    }
+
+    if (insertado) {
         cargarMarcas();
         cargarColores();
         cargarMateriales();
 
-        // Seleccionar automáticamente la nueva marca
+        // Seleccionar automáticamente los nuevos valores si fueron insertados
         for (int i = 0; i < MarcaComboBox.getItemCount(); i++) {
             MarcaItem item = MarcaComboBox.getItemAt(i);
             if (item.getNombre().equalsIgnoreCase(nuevaMarca)) {
@@ -1860,7 +1903,6 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
             }
         }
 
-        // Seleccionar automáticamente el nuevo color
         for (int i = 0; i < ColorComboBox.getItemCount(); i++) {
             ColorItem item = ColorComboBox.getItemAt(i);
             if (item.getNombre().equalsIgnoreCase(nuevoColor)) {
@@ -1869,7 +1911,6 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
             }
         }
 
-        // Seleccionar automáticamente el nuevo material
         for (int i = 0; i < MaterialComboBox.getItemCount(); i++) {
             MaterialItem item = MaterialComboBox.getItemAt(i);
             if (item.getNombre().equalsIgnoreCase(nuevoMaterial)) {
@@ -1879,18 +1920,13 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
         }
 
         JOptionPane.showMessageDialog(this, "Datos insertados y seleccionados correctamente.");
-
-        // Limpiar campos
         MarcaTxT.setText("");
         ColorTxT.setText("");
         MaterialTxT.setText("");
-        LlenarTabladatos(); // actualiza tabla
-
+        LlenarTabladatos();
     } else {
-        JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar los datos.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
-        
-        
+        JOptionPane.showMessageDialog(this, "No se insertó ningún dato nuevo.", "Información", JOptionPane.INFORMATION_MESSAGE);
+    }        
     }//GEN-LAST:event_AñadirBtnActionPerformed
 
     private void MarcaTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MarcaTxTActionPerformed
