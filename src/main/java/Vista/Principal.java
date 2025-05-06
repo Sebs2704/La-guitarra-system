@@ -31,80 +31,93 @@ public class Principal extends javax.swing.JFrame {
     
         private void cargarDatosComboBoxes()
         {
-        cargarMarcas();
-        cargarMateriales(); // Llama si implementas el combo de material
-        cargarColores();    // Llama si implementas el combo de color
+        cargarMarcasYTabla();
+        cargarMaterialesYTabla(); // Llama si implementas el combo de material
+        cargarColoresYTabla();    // Llama si implementas el combo de color
     }
     
     
-     private void cargarMarcas() {
-        // Obtener la lista de marcas desde la clase Conexion
-        List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
+     private void cargarMarcasYTabla() {
+    // Cargar ComboBox (como ya lo haces)
+    List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
+    DefaultComboBoxModel<MarcaItem> model = new DefaultComboBoxModel<>();
 
-        // Crear el modelo para el ComboBox
-        DefaultComboBoxModel<MarcaItem> model = new DefaultComboBoxModel<>();
-
-        if (marcas == null || marcas.isEmpty()) {
-            System.out.println("No se encontraron marcas.");
-            // Opcional: añadir un item placeholder o deshabilitar
-            // model.addElement(new MarcaItem(0, "-- Sin Marcas --"));
-            // marcaComboBox.setEnabled(false);
-        } else {
-            // Llenar el modelo con los objetos MarcaItem
-            for (MarcaItem item : marcas) {
-                model.addElement(item);
-            }
-             MarcaComboBox.setEnabled(true);
+    if (marcas == null || marcas.isEmpty()) {
+        System.out.println("No se encontraron marcas.");
+    } else {
+        for (MarcaItem item : marcas) {
+            model.addElement(item);
         }
-        // Asignar el modelo al JComboBox
-        MarcaComboBox.setModel(model);
+        MarcaComboBox.setEnabled(true);
     }
+
+    MarcaComboBox.setModel(model);
+
+    // Cargar JTable con las marcas
+    DefaultTableModel tablaModelo = new DefaultTableModel();
+    tablaModelo.addColumn("Marcas");
+
+    for (MarcaItem item : marcas) {
+        if (!item.getNombre().trim().isEmpty()) {
+            tablaModelo.addRow(new Object[]{item.getNombre()});
+        }
+    }
+
+    Marcastbld.setModel(tablaModelo);
+}
+
      
-     private void cargarMateriales() {
-        // Obtener la lista de materiales desde la clase Conexion
-        List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+     private void cargarMaterialesYTabla() {
+    List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+    DefaultComboBoxModel<MaterialItem> model = new DefaultComboBoxModel<>();
 
-        // Crear el modelo para el ComboBox
-        DefaultComboBoxModel<MaterialItem> model2 = new DefaultComboBoxModel<>();
-
-        if (materiales == null || materiales.isEmpty()) {
-            System.out.println("No se encontraron marcas.");
-            // Opcional: añadir un item placeholder o deshabilitar
-            // model.addElement(new MarcaItem(0, "-- Sin Marcas --"));
-            // marcaComboBox.setEnabled(false);
-        } else {
-            // Llenar el modelo con los objetos MarcaItem
-            for (MaterialItem item2 : materiales) {
-                model2.addElement(item2);
-            }
-             MaterialComboBox.setEnabled(true);
+    for (MaterialItem m : materiales) {
+        if (!m.getNombre().trim().isEmpty()) {
+            model.addElement(m);
         }
-        // Asignar el modelo al JComboBox
-        MaterialComboBox.setModel(model2);
-    } 
+    }
+
+    MaterialComboBox.setModel(model);
+    MaterialComboBox.setEnabled(!materiales.isEmpty());
+
+    DefaultTableModel tablaModelo = new DefaultTableModel();
+    tablaModelo.addColumn("Materiales");
+
+    for (MaterialItem m : materiales) {
+        if (!m.getNombre().trim().isEmpty()) {
+            tablaModelo.addRow(new Object[]{m.getNombre()});
+        }
+    }
+
+    Materialestbld.setModel(tablaModelo);
+}
+
     
-     private void cargarColores() {
-        // Obtener la lista de colores desde la clase Conexion
-        List<ColorItem> colores = conexion.obtenerTodosLosColores();
+     private void cargarColoresYTabla() {
+    List<ColorItem> colores = conexion.obtenerTodosLosColores();
+    DefaultComboBoxModel<ColorItem> model = new DefaultComboBoxModel<>();
 
-        // Crear el modelo para el ComboBox
-        DefaultComboBoxModel<ColorItem> model3 = new DefaultComboBoxModel<>();
-
-        if (colores == null || colores.isEmpty()) {
-            System.out.println("No se encontraron marcas.");
-            // Opcional: añadir un item placeholder o deshabilitar
-            // model.addElement(new MarcaItem(0, "-- Sin Marcas --"));
-            // marcaComboBox.setEnabled(false);
-        } else {
-            // Llenar el modelo con los objetos MarcaItem
-            for (ColorItem item3 : colores) {
-                model3.addElement(item3);
-            }
-             ColorComboBox.setEnabled(true);
+    for (ColorItem c : colores) {
+        if (!c.getNombre().trim().isEmpty()) {
+            model.addElement(c);
         }
-        // Asignar el modelo al JComboBox
-        ColorComboBox.setModel(model3);
-    } 
+    }
+
+    ColorComboBox.setModel(model);
+    ColorComboBox.setEnabled(!colores.isEmpty());
+
+    DefaultTableModel tablaModelo = new DefaultTableModel();
+    tablaModelo.addColumn("Colores");
+
+    for (ColorItem c : colores) {
+        if (!c.getNombre().trim().isEmpty()) {
+            tablaModelo.addRow(new Object[]{c.getNombre()});
+        }
+    }
+
+    Colorestbld.setModel(tablaModelo);
+}
+
 private void cargarProductosEnTabla() {
     DefaultTableModel modeloTabla = (DefaultTableModel) ProductosTbld.getModel();
     modeloTabla.setRowCount(0); // Limpiar la tabla
@@ -153,7 +166,7 @@ private void llenarTablaUsuarios() {
     UserTbld.setModel(modelo);
     }
 
-private void LlenarTabladatos() {
+/*private void LlenarTabladatos() {
     DefaultTableModel modelo = new DefaultTableModel();
 modelo.addColumn("Marcas");
 modelo.addColumn("Colores");
@@ -165,7 +178,7 @@ List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
 
 
 if (marcas.isEmpty() && colores.isEmpty() && materiales.isEmpty()) {
-    Datostbld.setModel(modelo); // Asignamos modelo vacío sin filas
+    Marcastbld.setModel(modelo); // Asignamos modelo vacío sin filas
     return;
 }
 
@@ -180,16 +193,67 @@ for (int i = 0; i < max; i++) {
 }
 
 // Asignar el modelo a la tabla
-Datostbld.setModel(modelo);
+Marcastbld.setModel(modelo);
+}*/
+
+private void llenarTablaMarcas() {
+    DefaultTableModel modelo = new DefaultTableModel();
+    modelo.addColumn("Marcas");
+
+    List<MarcaItem> marcas = conexion.obtenerTodasLasMarcas();
+    for (MarcaItem m : marcas) {
+        if (!m.getNombre().trim().isEmpty()) {  // Evita filas vacías
+            modelo.addRow(new Object[]{m.getNombre()});
+        }
+    }
+
+    Marcastbld.setModel(modelo);
 }
+
+
+private void llenarTablaColores() {
+    DefaultTableModel modelo = new DefaultTableModel();
+    modelo.addColumn("Colores");
+
+    List<ColorItem> colores = conexion.obtenerTodosLosColores();
+    for (ColorItem c : colores) {
+        if (!c.getNombre().trim().isEmpty()) {
+            modelo.addRow(new Object[]{c.getNombre()});
+        }
+    }
+
+    Colorestbld.setModel(modelo);
+}
+
+
+
+private void llenarTablaMateriales() {
+    DefaultTableModel modelo = new DefaultTableModel();
+    modelo.addColumn("Materiales");
+
+    List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+    for (MaterialItem m : materiales) {
+        if (!m.getNombre().trim().isEmpty()) {
+            modelo.addRow(new Object[]{m.getNombre()});
+        }
+    }
+
+    Materialestbld.setModel(modelo);
+}
+
+
     Conexion app = new Conexion();
     int xMouse, yMouse;
     public Principal() {
-        initComponents();
+        initComponents();//ingresar cualquier carga de metodos
+        
         cargarDatosComboBoxes();
         cargarProductosEnTabla();
         llenarTablaUsuarios();
-        LlenarTabladatos();
+        //LlenarTabladatos();
+        llenarTablaMarcas();     
+        llenarTablaColores();    
+        llenarTablaMateriales(); 
         
     }
     
@@ -303,18 +367,32 @@ Datostbld.setModel(modelo);
         ConsulBtn = new javax.swing.JButton();
         ElimBtn = new javax.swing.JButton();
         ActualizarBtn = new javax.swing.JButton();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel5 = new javax.swing.JPanel();
         jScrollPane5 = new javax.swing.JScrollPane();
-        Datostbld = new javax.swing.JTable();
+        Marcastbld = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         MarcaTxT = new javax.swing.JTextField();
-        ColorTxT = new javax.swing.JTextField();
-        MaterialTxT = new javax.swing.JTextField();
-        AñadirBtn = new javax.swing.JButton();
-        EliminarBtn2 = new javax.swing.JButton();
+        AñadirMarBtn = new javax.swing.JButton();
+        EliminarMarBtn = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
-        jLabel11 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
+        jPanel6 = new javax.swing.JPanel();
+        jPanel9 = new javax.swing.JPanel();
+        jScrollPane8 = new javax.swing.JScrollPane();
+        Colorestbld = new javax.swing.JTable();
+        jLabel17 = new javax.swing.JLabel();
+        ColorTxT = new javax.swing.JTextField();
+        AñadirColBtn = new javax.swing.JButton();
+        EliminarColBtn = new javax.swing.JButton();
+        jLabel19 = new javax.swing.JLabel();
+        jPanel8 = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        Materialestbld = new javax.swing.JTable();
+        jLabel13 = new javax.swing.JLabel();
+        MaterialTxT = new javax.swing.JTextField();
+        AñadirMatBtn = new javax.swing.JButton();
+        EliminarMatBtn = new javax.swing.JButton();
+        jLabel16 = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
@@ -487,15 +565,16 @@ Datostbld.setModel(modelo);
                 .addComponent(StockBtn)
                 .addGap(154, 154, 154)
                 .addComponent(UsuariosBtn)
-                .addContainerGap(421, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addGap(0, 7, Short.MAX_VALUE)
+                .addGap(0, 0, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(StockBtn)
-                    .addComponent(UsuariosBtn)))
+                    .addComponent(UsuariosBtn))
+                .addGap(467, 467, 467))
         );
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 60, 800, 30));
@@ -684,7 +763,7 @@ Datostbld.setModel(modelo);
                     .addGap(0, 126, Short.MAX_VALUE)))
         );
 
-        Tabla.addTab("tab1", NuevaVnt);
+        Tabla.addTab("Venta", NuevaVnt);
 
         Clientes.setBackground(new java.awt.Color(187, 119, 0));
 
@@ -814,7 +893,7 @@ Datostbld.setModel(modelo);
                 .addGap(24, 24, 24))
         );
 
-        Tabla.addTab("tab2", Clientes);
+        Tabla.addTab("Clientes", Clientes);
 
         Productos.setBackground(new java.awt.Color(187, 119, 0));
 
@@ -1066,7 +1145,7 @@ Datostbld.setModel(modelo);
                 .addContainerGap(35, Short.MAX_VALUE))
         );
 
-        Tabla.addTab("tab3", Productos);
+        Tabla.addTab("Stock", Productos);
 
         Reparaciones.setBackground(new java.awt.Color(187, 119, 0));
 
@@ -1081,7 +1160,7 @@ Datostbld.setModel(modelo);
             .addGap(0, 455, Short.MAX_VALUE)
         );
 
-        Tabla.addTab("tab6", Reparaciones);
+        Tabla.addTab("Reparaciones", Reparaciones);
 
         Venntas.setBackground(new java.awt.Color(187, 119, 0));
 
@@ -1205,7 +1284,7 @@ Datostbld.setModel(modelo);
                 .addContainerGap())
         );
 
-        Tabla.addTab("tab5", Venntas);
+        Tabla.addTab("Ventas", Venntas);
 
         Config.setBackground(new java.awt.Color(187, 119, 0));
 
@@ -1345,11 +1424,11 @@ Datostbld.setModel(modelo);
                 .addGap(22, 22, 22))
         );
 
-        Tabla.addTab("tab6", Config);
+        Tabla.addTab("Usuarios", Config);
 
         jPanel5.setBackground(new java.awt.Color(187, 119, 0));
 
-        Datostbld.setModel(new javax.swing.table.DefaultTableModel(
+        Marcastbld.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -1360,7 +1439,7 @@ Datostbld.setModel(modelo);
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane5.setViewportView(Datostbld);
+        jScrollPane5.setViewportView(Marcastbld);
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel9.setText("Adiccionar datos");
@@ -1371,89 +1450,237 @@ Datostbld.setModel(modelo);
             }
         });
 
-        AñadirBtn.setText("Añadir");
-        AñadirBtn.addActionListener(new java.awt.event.ActionListener() {
+        AñadirMarBtn.setText("Añadir");
+        AñadirMarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AñadirBtnActionPerformed(evt);
+                AñadirMarBtnActionPerformed(evt);
             }
         });
 
-        EliminarBtn2.setText("Eliminar");
-        EliminarBtn2.addActionListener(new java.awt.event.ActionListener() {
+        EliminarMarBtn.setText("Eliminar");
+        EliminarMarBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EliminarBtn2ActionPerformed(evt);
+                EliminarMarBtnActionPerformed(evt);
             }
         });
 
         jLabel10.setText("Marca");
 
-        jLabel11.setText("Color");
-
-        jLabel12.setText("Material");
-
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+            .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 82, Short.MAX_VALUE)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGap(37, 37, 37)
-                                .addComponent(AñadirBtn)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(EliminarBtn2))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel5Layout.createSequentialGroup()
-                                        .addGap(0, 3, Short.MAX_VALUE)
-                                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 27, Short.MAX_VALUE)
-                                        .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel5Layout.createSequentialGroup()
-                                        .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                            .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addGap(24, 24, 24)
-                                .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(MarcaTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addGap(51, 51, 51))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(85, 85, 85)))
-                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(MarcaTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel9, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(52, 52, 52))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(49, 49, 49)
+                        .addComponent(AñadirMarBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(EliminarMarBtn)
+                        .addGap(25, 25, 25))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(116, 116, 116)))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 485, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 455, Short.MAX_VALUE)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(78, 78, 78)
                 .addComponent(jLabel9)
-                .addGap(55, 55, 55)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(MarcaTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel10))
-                .addGap(38, 38, 38)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel11)
-                    .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel12))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jLabel10)
+                .addGap(18, 18, 18)
+                .addComponent(MarcaTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(59, 59, 59)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(AñadirBtn)
-                    .addComponent(EliminarBtn2))
-                .addGap(57, 57, 57))
+                    .addComponent(AñadirMarBtn)
+                    .addComponent(EliminarMarBtn))
+                .addGap(96, 96, 96))
         );
 
-        Tabla.addTab("tab7", jPanel5);
+        jTabbedPane1.addTab("Marca", jPanel5);
+
+        jPanel9.setBackground(new java.awt.Color(187, 119, 0));
+
+        Colorestbld.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane8.setViewportView(Colorestbld);
+
+        jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel17.setText("Adiccionar datos");
+
+        AñadirColBtn.setText("Añadir");
+        AñadirColBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AñadirColBtnActionPerformed(evt);
+            }
+        });
+
+        EliminarColBtn.setText("Eliminar");
+        EliminarColBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EliminarColBtnActionPerformed(evt);
+            }
+        });
+
+        jLabel19.setText("Color");
+
+        javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
+        jPanel9.setLayout(jPanel9Layout);
+        jPanel9Layout.setHorizontalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(0, 80, Short.MAX_VALUE)
+                        .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel17, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(49, 49, 49))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel19, javax.swing.GroupLayout.PREFERRED_SIZE, 43, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(114, 114, 114))
+                    .addGroup(jPanel9Layout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addComponent(AñadirColBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(EliminarColBtn)
+                        .addGap(24, 24, 24)))
+                .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 488, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel9Layout.setVerticalGroup(
+            jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+            .addGroup(jPanel9Layout.createSequentialGroup()
+                .addGap(83, 83, 83)
+                .addComponent(jLabel17)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
+                .addComponent(jLabel19)
+                .addGap(28, 28, 28)
+                .addComponent(ColorTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(69, 69, 69)
+                .addGroup(jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(EliminarColBtn)
+                    .addComponent(AñadirColBtn))
+                .addGap(84, 84, 84))
+        );
+
+        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
+        jPanel6.setLayout(jPanel6Layout);
+        jPanel6Layout.setHorizontalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel6Layout.createSequentialGroup()
+                .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 6, Short.MAX_VALUE))
+        );
+        jPanel6Layout.setVerticalGroup(
+            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Color", jPanel6);
+
+        jPanel8.setBackground(new java.awt.Color(187, 119, 0));
+
+        Materialestbld.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Title 1", "Title 2", "Title 3", "Title 4"
+            }
+        ));
+        jScrollPane7.setViewportView(Materialestbld);
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel13.setText("Adiccionar datos");
+
+        AñadirMatBtn.setText("Añadir");
+        AñadirMatBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AñadirMatBtnActionPerformed(evt);
+            }
+        });
+
+        EliminarMatBtn.setText("Eliminar");
+        EliminarMatBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EliminarMatBtnActionPerformed(evt);
+            }
+        });
+
+        jLabel16.setText("Material");
+
+        javax.swing.GroupLayout jPanel8Layout = new javax.swing.GroupLayout(jPanel8);
+        jPanel8.setLayout(jPanel8Layout);
+        jPanel8Layout.setHorizontalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel8Layout.createSequentialGroup()
+                                .addGap(43, 43, 43)
+                                .addComponent(AñadirMatBtn)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(EliminarMatBtn))
+                            .addGroup(jPanel8Layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(12, 12, 12)))
+                        .addGap(16, 16, 16))
+                    .addGroup(jPanel8Layout.createSequentialGroup()
+                        .addGap(137, 137, 137)
+                        .addComponent(jLabel16, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel8Layout.createSequentialGroup()
+                        .addContainerGap(67, Short.MAX_VALUE)
+                        .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(43, 43, 43)))
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 509, javax.swing.GroupLayout.PREFERRED_SIZE))
+        );
+        jPanel8Layout.setVerticalGroup(
+            jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+            .addGroup(jPanel8Layout.createSequentialGroup()
+                .addGap(78, 78, 78)
+                .addComponent(jLabel13)
+                .addGap(75, 75, 75)
+                .addComponent(jLabel16)
+                .addGap(26, 26, 26)
+                .addComponent(MaterialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(56, 56, 56)
+                .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(AñadirMatBtn)
+                    .addComponent(EliminarMatBtn))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Material", jPanel8);
+
+        Tabla.addTab("Datos", jTabbedPane1);
 
         jPanel1.add(Tabla, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 120, 800, 490));
 
@@ -1842,165 +2069,182 @@ if (confirm == JOptionPane.YES_OPTION) {
     private void EditardatosbuttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditardatosbuttonActionPerformed
 Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
 
-    private void AñadirBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirBtnActionPerformed
-         String nuevaMarca = MarcaTxT.getText().trim();
-    String nuevoColor = ColorTxT.getText().trim();
-    String nuevoMaterial = MaterialTxT.getText().trim();
+    private void NombTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombTxTActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_NombTxTActionPerformed
 
-    if ((nuevaMarca.isEmpty() && nuevoColor.isEmpty() && nuevoMaterial.isEmpty()) ||
-        nuevaMarca.equalsIgnoreCase("nombre") || nuevoColor.equalsIgnoreCase("nombre") || nuevoMaterial.equalsIgnoreCase("nombre")) {
-        JOptionPane.showMessageDialog(this, "Por favor, ingrese al menos un valor válido para añadir.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+    private void EliminarMatBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarMatBtnActionPerformed
+String nombreMaterial = MaterialTxT.getText().trim();
+
+    if (nombreMaterial.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el nombre del material que desea eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
+    List<MaterialItem> materiales = conexion.obtenerTodosLosMateriales();
+    MaterialItem materialAEliminar = null;
 
-    boolean insertado = false;
-
-    // Verificar si ya existe la marca
-    if (!nuevaMarca.isEmpty()) {
-        boolean existe = conexion.obtenerTodasLasMarcas().stream()
-                         .anyMatch(m -> m.getNombre().equalsIgnoreCase(nuevaMarca));
-        if (existe) {
-            JOptionPane.showMessageDialog(this, "La marca '" + nuevaMarca + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        } else {
-            insertado |= conexion.insertarNuevaMarca(nuevaMarca);
+    for (MaterialItem m : materiales) {
+        if (m.getNombre().equalsIgnoreCase(nombreMaterial)) {
+            materialAEliminar = m;
+            break;
         }
     }
 
-    // Verificar si ya existe el color
-    if (!nuevoColor.isEmpty()) {
-        boolean existe = conexion.obtenerTodosLosColores().stream()
-                         .anyMatch(c -> c.getNombre().equalsIgnoreCase(nuevoColor));
-        if (existe) {
-            JOptionPane.showMessageDialog(this, "El color '" + nuevoColor + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        } else {
-            insertado |= conexion.insertarNuevoColor(nuevoColor);
-        }
+    if (materialAEliminar == null) {
+        JOptionPane.showMessageDialog(this, "El material '" + nombreMaterial + "' no existe.", "Información", JOptionPane.INFORMATION_MESSAGE);
+        return;
     }
 
-    // Verificar si ya existe el material
-    if (!nuevoMaterial.isEmpty()) {
-        boolean existe = conexion.obtenerTodosLosMateriales().stream()
-                         .anyMatch(m -> m.getNombre().equalsIgnoreCase(nuevoMaterial));
-        if (existe) {
-            JOptionPane.showMessageDialog(this, "El material '" + nuevoMaterial + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        } else {
-            insertado |= conexion.insertarNuevoMaterial(nuevoMaterial);
-        }
+    if (conexion.materialEstaEnUso(materialAEliminar.getIdMaterial())) {
+        JOptionPane.showMessageDialog(this, "No se puede eliminar el material porque está siendo usado en productos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
     }
 
-    if (insertado) {
-        cargarMarcas();
-        cargarColores();
-        cargarMateriales();
-
-        // Seleccionar automáticamente los nuevos valores si fueron insertados
-        for (int i = 0; i < MarcaComboBox.getItemCount(); i++) {
-            MarcaItem item = MarcaComboBox.getItemAt(i);
-            if (item.getNombre().equalsIgnoreCase(nuevaMarca)) {
-                MarcaComboBox.setSelectedIndex(i);
-                break;
-            }
+    int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar el material '" + nombreMaterial + "'?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        boolean eliminado = conexion.eliminarMaterial(materialAEliminar.getIdMaterial());
+        if (eliminado) {
+            JOptionPane.showMessageDialog(this, "Material eliminado correctamente.");
+            MaterialTxT.setText("");
+            cargarMaterialesYTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al eliminar el material.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+    }    }//GEN-LAST:event_EliminarMatBtnActionPerformed
 
-        for (int i = 0; i < ColorComboBox.getItemCount(); i++) {
-            ColorItem item = ColorComboBox.getItemAt(i);
-            if (item.getNombre().equalsIgnoreCase(nuevoColor)) {
-                ColorComboBox.setSelectedIndex(i);
-                break;
-            }
-        }
+    private void AñadirMatBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirMatBtnActionPerformed
+   String nuevoMaterial = MaterialTxT.getText().trim();
 
-        for (int i = 0; i < MaterialComboBox.getItemCount(); i++) {
-            MaterialItem item = MaterialComboBox.getItemAt(i);
-            if (item.getNombre().equalsIgnoreCase(nuevoMaterial)) {
-                MaterialComboBox.setSelectedIndex(i);
-                break;
-            }
-        }
+    if (nuevoMaterial.isEmpty() || 
+        nuevoMaterial.equalsIgnoreCase("nombre") || 
+        !nuevoMaterial.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
 
-        JOptionPane.showMessageDialog(this, "Datos insertados y seleccionados correctamente.");
-        MarcaTxT.setText("");
-        ColorTxT.setText("");
-        MaterialTxT.setText("");
-        LlenarTabladatos();
+        JOptionPane.showMessageDialog(this, "Por favor, ingrese un nombre válido (solo letras) para el material.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    boolean existe = conexion.obtenerTodosLosMateriales().stream()
+                     .anyMatch(m -> m.getNombre().equalsIgnoreCase(nuevoMaterial));
+
+    if (existe) {
+        JOptionPane.showMessageDialog(this, "El material '" + nuevoMaterial + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
     } else {
-        JOptionPane.showMessageDialog(this, "No se insertó ningún dato nuevo.", "Información", JOptionPane.INFORMATION_MESSAGE);
-    }        
-    }//GEN-LAST:event_AñadirBtnActionPerformed
+        boolean insertado = conexion.insertarNuevoMaterial(nuevoMaterial);
+        if (insertado) {
+            cargarMaterialesYTabla();
+            JOptionPane.showMessageDialog(this, "Material añadido correctamente.");
+            MaterialTxT.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar el material.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }//GEN-LAST:event_AñadirMatBtnActionPerformed
+
+    private void EliminarMarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarMarBtnActionPerformed
+       String nombreColor = ColorTxT.getText().trim();
+
+    if (nombreColor.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el nombre del color que desea eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    List<ColorItem> colores = conexion.obtenerTodosLosColores();
+    ColorItem colorAEliminar = null;
+
+    for (ColorItem c : colores) {
+        if (c.getNombre().equalsIgnoreCase(nombreColor)) {
+            colorAEliminar = c;
+            break;
+        }
+    }
+
+    if (colorAEliminar == null) {
+        JOptionPane.showMessageDialog(this, "El color '" + nombreColor + "' no existe.", "Información", JOptionPane.INFORMATION_MESSAGE);
+        return;
+    }
+
+    if (conexion.colorEstaEnUso(colorAEliminar.getIdColor())) {
+        JOptionPane.showMessageDialog(this, "No se puede eliminar el color porque está siendo usado en productos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar el color '" + nombreColor + "'?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+    if (confirm == JOptionPane.YES_OPTION) {
+        boolean eliminado = conexion.eliminarColor(colorAEliminar.getIdColor());
+        if (eliminado) {
+            JOptionPane.showMessageDialog(this, "Color eliminado correctamente.");
+            ColorTxT.setText("");
+            cargarColoresYTabla();  // Refresca combo y tabla
+        } else {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al eliminar el color.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }//GEN-LAST:event_EliminarMarBtnActionPerformed
+
+    private void AñadirMarBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirMarBtnActionPerformed
+       String nuevaMarca = MarcaTxT.getText().trim();
+
+    if (nuevaMarca.isEmpty() || 
+        nuevaMarca.equalsIgnoreCase("nombre") || 
+        !nuevaMarca.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
+        
+        JOptionPane.showMessageDialog(this, "Por favor, ingrese un nombre válido (solo letras) para la marca.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    boolean existe = conexion.obtenerTodasLasMarcas().stream()
+                     .anyMatch(m -> m.getNombre().equalsIgnoreCase(nuevaMarca));
+
+    if (existe) {
+        JOptionPane.showMessageDialog(this, "La marca '" + nuevaMarca + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+    } else {
+        boolean insertado = conexion.insertarNuevaMarca(nuevaMarca);
+        if (insertado) {
+            cargarMarcasYTabla();
+            JOptionPane.showMessageDialog(this, "Marca añadida correctamente.");
+            MarcaTxT.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar la marca.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }//GEN-LAST:event_AñadirMarBtnActionPerformed
 
     private void MarcaTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_MarcaTxTActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_MarcaTxTActionPerformed
 
-    private void NombTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NombTxTActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_NombTxTActionPerformed
+    private void AñadirColBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AñadirColBtnActionPerformed
+ String nuevoColor = ColorTxT.getText().trim();
 
-    private void EliminarBtn2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarBtn2ActionPerformed
- String marca = MarcaTxT.getText().trim();
-    String color = ColorTxT.getText().trim();
-    String material = MaterialTxT.getText().trim();
+    if (nuevoColor.isEmpty() || 
+        nuevoColor.equalsIgnoreCase("nombre") || 
+        !nuevoColor.matches("[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+")) {
 
-    if (marca.isEmpty() && color.isEmpty() && material.isEmpty()) {
-        JOptionPane.showMessageDialog(this, "Escriba una marca, color o material para eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        JOptionPane.showMessageDialog(this, "Por favor, ingrese un nombre válido (solo letras) para el color.", "Advertencia", JOptionPane.WARNING_MESSAGE);
         return;
     }
 
-    boolean eliminado = false;
+    boolean existe = conexion.obtenerTodosLosColores().stream()
+                     .anyMatch(c -> c.getNombre().equalsIgnoreCase(nuevoColor));
 
-    // Eliminar marca si fue ingresada
-    if (!marca.isEmpty()) {
-        for (MarcaItem m : conexion.obtenerTodasLasMarcas()) {
-            if (m.getNombre().equalsIgnoreCase(marca)) {
-                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar marca '" + marca + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    eliminado = conexion.eliminarMarca(m.getIdMarca());
-                }
-                break;
-            }
-        }
-    }
-
-    // Eliminar color si fue ingresado
-    if (!color.isEmpty()) {
-        for (ColorItem c : conexion.obtenerTodosLosColores()) {
-            if (c.getNombre().equalsIgnoreCase(color)) {
-                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar color '" + color + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    eliminado = conexion.eliminarColor(c.getIdColor());
-                }
-                break;
-            }
-        }
-    }
-
-    // Eliminar material si fue ingresado
-    if (!material.isEmpty()) {
-        for (MaterialItem m : conexion.obtenerTodosLosMateriales()) {
-            if (m.getNombre().equalsIgnoreCase(material)) {
-                int confirm = JOptionPane.showConfirmDialog(this, "¿Eliminar material '" + material + "'?", "Confirmar", JOptionPane.YES_NO_OPTION);
-                if (confirm == JOptionPane.YES_OPTION) {
-                    eliminado = conexion.eliminarMaterial(m.getIdMaterial());
-                }
-                break;
-            }
-        }
-    }
-
-    if (eliminado) {
-        JOptionPane.showMessageDialog(this, "Elemento eliminado correctamente.");
-        // Actualizar interfaz
-        cargarMarcas();
-        cargarColores();
-        cargarMateriales();
-        LlenarTabladatos();
-        MarcaTxT.setText("");
-        ColorTxT.setText("");
-        MaterialTxT.setText("");
+    if (existe) {
+        JOptionPane.showMessageDialog(this, "El color '" + nuevoColor + "' ya existe.", "Advertencia", JOptionPane.WARNING_MESSAGE);
     } else {
-        JOptionPane.showMessageDialog(this, "No se encontró el elemento o no se pudo eliminar.", "Información", JOptionPane.INFORMATION_MESSAGE);
-    }    }//GEN-LAST:event_EliminarBtn2ActionPerformed
+        boolean insertado = conexion.insertarNuevoColor(nuevoColor);
+        if (insertado) {
+            cargarColoresYTabla();
+            JOptionPane.showMessageDialog(this, "Color añadido correctamente.");
+            ColorTxT.setText("");
+        } else {
+            JOptionPane.showMessageDialog(this, "Ocurrió un error al insertar el color.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }      
+    }//GEN-LAST:event_AñadirColBtnActionPerformed
+
+    private void EliminarColBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarColBtnActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_EliminarColBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -2039,7 +2283,9 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ActualizarBtn;
     private javax.swing.JTextField ApellidoTxT;
-    private javax.swing.JButton AñadirBtn;
+    private javax.swing.JButton AñadirColBtn;
+    private javax.swing.JButton AñadirMarBtn;
+    private javax.swing.JButton AñadirMatBtn;
     private javax.swing.JLabel Cantidad;
     private javax.swing.JLabel CantidadPro;
     private javax.swing.JTextField CantidadTxT;
@@ -2055,6 +2301,7 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
     private javax.swing.JTextField CodigoTxt;
     private javax.swing.JComboBox<ColorItem> ColorComboBox;
     private javax.swing.JTextField ColorTxT;
+    private javax.swing.JTable Colorestbld;
     private javax.swing.JPanel Config;
     private javax.swing.JButton ConsulBtn;
     private javax.swing.JButton ConsultarBtn;
@@ -2062,7 +2309,6 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
     private javax.swing.JTextField ContraseñaTxT;
     private javax.swing.JLabel DOC;
     private javax.swing.JTextField DOCtxt;
-    private javax.swing.JTable Datostbld;
     private javax.swing.JLabel DescripPro;
     private javax.swing.JTextField DescripTxt;
     private javax.swing.JLabel Descripcion;
@@ -2072,13 +2318,17 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
     private javax.swing.JButton Editardatosbutton;
     private javax.swing.JButton ElimBtn;
     private javax.swing.JButton EliminarBtn;
-    private javax.swing.JButton EliminarBtn2;
+    private javax.swing.JButton EliminarColBtn;
+    private javax.swing.JButton EliminarMarBtn;
+    private javax.swing.JButton EliminarMatBtn;
     private javax.swing.JPanel ExitBtn;
     private javax.swing.JLabel ExitTxT;
     private javax.swing.JComboBox<MarcaItem> MarcaComboBox;
     private javax.swing.JTextField MarcaTxT;
+    private javax.swing.JTable Marcastbld;
     private javax.swing.JComboBox<MaterialItem> MaterialComboBox;
     private javax.swing.JTextField MaterialTxT;
+    private javax.swing.JTable Materialestbld;
     private javax.swing.JButton ModificarBtn;
     private javax.swing.JLabel Nom;
     private javax.swing.JTextField NomTxT;
@@ -2131,8 +2381,10 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
     private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -2147,13 +2399,19 @@ Tabla.setSelectedIndex(6);    }//GEN-LAST:event_EditardatosbuttonActionPerformed
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
+    private javax.swing.JPanel jPanel8;
+    private javax.swing.JPanel jPanel9;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane6;
+    private javax.swing.JScrollPane jScrollPane7;
+    private javax.swing.JScrollPane jScrollPane8;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 }
 

@@ -592,6 +592,50 @@ public boolean eliminarMaterial(int idMaterial) {
 }
 
 
-     
+
+// Datos adiccionados
+
+
+public boolean marcaEstaEnUso(int idMarca) {
+    String sql = "SELECT COUNT(*) FROM producto WHERE marca = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idMarca);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al verificar uso de marca: " + e.getMessage());
+    }
+    return false;
+}
+
+public boolean colorEstaEnUso(int idColor) {
+    String sql = "SELECT COUNT(*) FROM producto WHERE color = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idColor);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al verificar uso del color: " + e.getMessage());
+    }
+    return false;
+}
+
+public boolean materialEstaEnUso(int idMaterial) {
+    String sql = "SELECT COUNT(*) FROM producto WHERE material = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idMaterial);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt(1) > 0;
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al verificar uso del material: " + e.getMessage());
+    }
+    return false;
+    }  
 }
 

@@ -6,6 +6,7 @@ Vista\Registro$7.class
 Vista\Principal$10.class
 Vista\Principal$9.class
 Vista\Login$3.class
+Vista\Principal$37.class
 Vista\Principal$27.class
 Modelo\MarcaItem.class
 Vista\Principal$33.class
@@ -27,6 +28,7 @@ com\mycompany\proyecdoo\ProyecDoo.class
 Vista\Principal$29.class
 Vista\Principal$14.class
 Vista\Login$5.class
+Vista\Principal$34.class
 Vista\Registro$10.class
 Modelo\Producto.class
 Vista\Principal$31.class
@@ -47,7 +49,9 @@ Vista\Principal$22.class
 Vista\Login$1.class
 Vista\Principal$15.class
 Modelo\Persona.class
+Vista\Principal$35.class
 Vista\Principal$25.class
+Vista\Principal$36.class
 Vista\Principal$16.class
 Modelo\ColorItem.class
 Vista\Login$4.class
