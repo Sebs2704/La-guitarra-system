@@ -7,6 +7,7 @@ import Modelo.MarcaItem;
 import Modelo.MaterialItem;
 import Modelo.ColorItem;
 import Modelo.Usuario;
+import Modelo.Cliente;
 import java.awt.Color;
 import java.util.List;
 import javax.swing.DefaultComboBoxModel;
@@ -28,6 +29,14 @@ public class Principal extends javax.swing.JFrame {
     NombTxT.setText("");
     //ColorTxT.setText("");
 }
+    private void limpiarCamposCliente() {
+    DocTxT.setText("");
+    NombreTxT.setText("");
+    TelefonoTxT.setText("");
+    Razon_SocialTxT.setText("");
+}
+
+    
     
         private void cargarDatosComboBoxes()
         {
@@ -137,6 +146,20 @@ private void cargarProductosEnTabla() {
         });
     }
 }
+
+private void cargarTablaClientes() {
+    DefaultTableModel modelo = (DefaultTableModel) ClientesTbld.getModel();
+    modelo.setRowCount(0);
+
+    List<Cliente> clientes = conexion.obtenerTodosLosClientes();
+    for (Cliente c : clientes) {
+        modelo.addRow(new Object[]{
+            c.getDocumento(), c.getNombre(), c.getTelefono(), c.getRazonSocial()
+        });
+    }
+}
+
+
 private void llenarTablaUsuarios() {
     // Crear un modelo de tabla con las columnas necesarias
     DefaultTableModel modelo = new DefaultTableModel();
@@ -307,10 +330,10 @@ private void llenarTablaMateriales() {
         Razon_SocialTxT = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         ClientesTbld = new javax.swing.JTable();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        Clientebtn = new javax.swing.JButton();
+        ConClntbtn = new javax.swing.JButton();
+        ElimClntbtn = new javax.swing.JButton();
+        ModClntbtn = new javax.swing.JButton();
         Productos = new javax.swing.JPanel();
         Codigo = new javax.swing.JLabel();
         Descripcion = new javax.swing.JLabel();
@@ -644,6 +667,11 @@ private void llenarTablaMateriales() {
 
         DescripTxt.setBackground(new java.awt.Color(207, 128, 38));
         DescripTxt.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
+        DescripTxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DescripTxtActionPerformed(evt);
+            }
+        });
 
         DOC.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
         DOC.setText("CC / Documento");
@@ -778,14 +806,13 @@ private void llenarTablaMateriales() {
 
         Nombre.setText("Nombre");
 
-        NombreTxT.setEditable(false);
         NombreTxT.setBackground(new java.awt.Color(207, 128, 38));
 
         Telefono.setText("Telefono");
 
         TelefonoTxT.setBackground(new java.awt.Color(207, 128, 38));
 
-        Razon_Social.setText("Razon social");
+        Razon_Social.setText("Correo electronico");
 
         Razon_SocialTxT.setBackground(new java.awt.Color(207, 128, 38));
 
@@ -795,31 +822,46 @@ private void llenarTablaMateriales() {
 
             },
             new String [] {
-                "CC / Documento de identidad", "Nombre", "Telefono", "Razon social"
+                "CC / Documento de identidad", "Nombre", "Telefono", "Correo"
             }
         ));
         jScrollPane2.setViewportView(ClientesTbld);
 
-        jButton2.setBackground(new java.awt.Color(117, 80, 72));
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Registrar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        Clientebtn.setBackground(new java.awt.Color(117, 80, 72));
+        Clientebtn.setForeground(new java.awt.Color(255, 255, 255));
+        Clientebtn.setText("Registrar");
+        Clientebtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                ClientebtnActionPerformed(evt);
             }
         });
 
-        jButton3.setBackground(new java.awt.Color(117, 80, 72));
-        jButton3.setForeground(new java.awt.Color(255, 255, 255));
-        jButton3.setText("Consultar");
+        ConClntbtn.setBackground(new java.awt.Color(117, 80, 72));
+        ConClntbtn.setForeground(new java.awt.Color(255, 255, 255));
+        ConClntbtn.setText("Consultar");
+        ConClntbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ConClntbtnActionPerformed(evt);
+            }
+        });
 
-        jButton4.setBackground(new java.awt.Color(117, 80, 72));
-        jButton4.setForeground(new java.awt.Color(255, 255, 255));
-        jButton4.setText("Eliminar");
+        ElimClntbtn.setBackground(new java.awt.Color(117, 80, 72));
+        ElimClntbtn.setForeground(new java.awt.Color(255, 255, 255));
+        ElimClntbtn.setText("Eliminar");
+        ElimClntbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ElimClntbtnActionPerformed(evt);
+            }
+        });
 
-        jButton5.setBackground(new java.awt.Color(117, 80, 72));
-        jButton5.setForeground(new java.awt.Color(255, 255, 255));
-        jButton5.setText("Modificar");
+        ModClntbtn.setBackground(new java.awt.Color(117, 80, 72));
+        ModClntbtn.setForeground(new java.awt.Color(255, 255, 255));
+        ModClntbtn.setText("Modificar");
+        ModClntbtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ModClntbtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout ClientesLayout = new javax.swing.GroupLayout(Clientes);
         Clientes.setLayout(ClientesLayout);
@@ -850,13 +892,13 @@ private void llenarTablaMateriales() {
                         .addGap(27, 27, 27)
                         .addGroup(ClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(ClientesLayout.createSequentialGroup()
-                                .addComponent(jButton4)
+                                .addComponent(ElimClntbtn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton5))
+                                .addComponent(ModClntbtn))
                             .addGroup(ClientesLayout.createSequentialGroup()
-                                .addComponent(jButton2)
+                                .addComponent(Clientebtn)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton3)))
+                                .addComponent(ConClntbtn)))
                         .addGap(68, 68, 68)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -883,13 +925,13 @@ private void llenarTablaMateriales() {
                             .addComponent(Razon_SocialTxT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(66, 66, 66)
                         .addGroup(ClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton2)
-                            .addComponent(jButton3)))
+                            .addComponent(Clientebtn)
+                            .addComponent(ConClntbtn)))
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 41, Short.MAX_VALUE)
                 .addGroup(ClientesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton4)
-                    .addComponent(jButton5))
+                    .addComponent(ElimClntbtn)
+                    .addComponent(ModClntbtn))
                 .addGap(24, 24, 24))
         );
 
@@ -1590,7 +1632,7 @@ private void llenarTablaMateriales() {
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(jPanel9, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 6, Short.MAX_VALUE))
+                .addGap(0, 2, Short.MAX_VALUE))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2046,9 +2088,27 @@ if (confirm == JOptionPane.YES_OPTION) {
         }
     }//GEN-LAST:event_RegistrarBtnActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
+    private void ClientebtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ClientebtnActionPerformed
+        String documento = DocTxT.getText();
+    String nombre = NombreTxT.getText();
+    String telefono = TelefonoTxT.getText();
+    String razonSocial = Razon_SocialTxT.getText();
+
+    if (documento.isEmpty() || nombre.isEmpty() || telefono.isEmpty() || razonSocial.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    Cliente cliente = new Cliente(documento, nombre, telefono, razonSocial);
+
+    if (conexion.registrarCliente(cliente)) {
+        JOptionPane.showMessageDialog(this, "Cliente registrado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        limpiarCamposCliente();
+        cargarTablaClientes();
+    } else {
+        JOptionPane.showMessageDialog(this, "El cliente ya está registrado o hubo un error.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    }//GEN-LAST:event_ClientebtnActionPerformed
 
     private void DocTxTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DocTxTActionPerformed
         // TODO add your handling code here:
@@ -2246,6 +2306,71 @@ String nombreMaterial = MaterialTxT.getText().trim();
         // TODO add your handling code here:
     }//GEN-LAST:event_EliminarColBtnActionPerformed
 
+    private void DescripTxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DescripTxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DescripTxtActionPerformed
+
+    private void ConClntbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConClntbtnActionPerformed
+String documento = DocTxT.getText();
+
+    if (documento.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el documento del cliente a consultar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    Cliente cliente = conexion.consultarCliente(documento);
+
+    if (cliente != null) {
+        NombreTxT.setText(cliente.getNombre());
+        TelefonoTxT.setText(cliente.getTelefono());
+        Razon_SocialTxT.setText(cliente.getRazonSocial());
+        JOptionPane.showMessageDialog(this, "Cliente encontrado.", "Información", JOptionPane.INFORMATION_MESSAGE);
+    } else {
+        JOptionPane.showMessageDialog(this, "Cliente no encontrado.", "Información", JOptionPane.INFORMATION_MESSAGE);
+        limpiarCamposCliente();
+    }    }//GEN-LAST:event_ConClntbtnActionPerformed
+
+    private void ElimClntbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ElimClntbtnActionPerformed
+String documento = DocTxT.getText();
+
+    if (documento.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Ingrese el documento del cliente a eliminar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int confirmacion = JOptionPane.showConfirmDialog(this, "¿Desea eliminar este cliente?", "Confirmación", JOptionPane.YES_NO_OPTION);
+    if (confirmacion == JOptionPane.YES_OPTION) {
+        if (conexion.eliminarCliente(documento)) {
+            JOptionPane.showMessageDialog(this, "Cliente eliminado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            limpiarCamposCliente();
+            cargarTablaClientes();
+        } else {
+            JOptionPane.showMessageDialog(this, "El cliente no existe o hubo un error al eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    }//GEN-LAST:event_ElimClntbtnActionPerformed
+
+    private void ModClntbtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ModClntbtnActionPerformed
+String documento = DocTxT.getText();
+    String nombre = NombreTxT.getText();
+    String telefono = TelefonoTxT.getText();
+    String razonSocial = Razon_SocialTxT.getText();
+
+    if (documento.isEmpty() || nombre.isEmpty() || telefono.isEmpty() || razonSocial.isEmpty()) {
+        JOptionPane.showMessageDialog(this, "Complete todos los campos para modificar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    Cliente cliente = new Cliente(documento, nombre, telefono, razonSocial);
+
+    if (conexion.actualizarCliente(cliente)) {
+        JOptionPane.showMessageDialog(this, "Cliente modificado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        limpiarCamposCliente();
+        cargarTablaClientes();
+    } else {
+        JOptionPane.showMessageDialog(this, "El cliente no existe o hubo un error al modificar.", "Error", JOptionPane.ERROR_MESSAGE);
+    }    }//GEN-LAST:event_ModClntbtnActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2292,6 +2417,7 @@ String nombreMaterial = MaterialTxT.getText().trim();
     private javax.swing.JTextField CantidadTxt;
     private javax.swing.JButton CerrarSesionBtn;
     private javax.swing.JTextField ClienteTxT;
+    private javax.swing.JButton Clientebtn;
     private javax.swing.JPanel Clientes;
     private javax.swing.JButton ClientesBtn;
     private javax.swing.JTable ClientesTbld;
@@ -2302,6 +2428,7 @@ String nombreMaterial = MaterialTxT.getText().trim();
     private javax.swing.JComboBox<ColorItem> ColorComboBox;
     private javax.swing.JTextField ColorTxT;
     private javax.swing.JTable Colorestbld;
+    private javax.swing.JButton ConClntbtn;
     private javax.swing.JPanel Config;
     private javax.swing.JButton ConsulBtn;
     private javax.swing.JButton ConsultarBtn;
@@ -2317,6 +2444,7 @@ String nombreMaterial = MaterialTxT.getText().trim();
     private javax.swing.JLabel Documento;
     private javax.swing.JButton Editardatosbutton;
     private javax.swing.JButton ElimBtn;
+    private javax.swing.JButton ElimClntbtn;
     private javax.swing.JButton EliminarBtn;
     private javax.swing.JButton EliminarColBtn;
     private javax.swing.JButton EliminarMarBtn;
@@ -2329,6 +2457,7 @@ String nombreMaterial = MaterialTxT.getText().trim();
     private javax.swing.JComboBox<MaterialItem> MaterialComboBox;
     private javax.swing.JTextField MaterialTxT;
     private javax.swing.JTable Materialestbld;
+    private javax.swing.JButton ModClntbtn;
     private javax.swing.JButton ModificarBtn;
     private javax.swing.JLabel Nom;
     private javax.swing.JTextField NomTxT;
@@ -2371,10 +2500,6 @@ String nombreMaterial = MaterialTxT.getText().trim();
     private javax.swing.JButton VentasBtn;
     private javax.swing.JTable VentasTbld;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;

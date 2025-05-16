@@ -2,6 +2,7 @@ Vista\Login.class
 Vista\Principal$20.class
 Vista\Principal$17.class
 Vista\Principal$30.class
+Vista\Principal$40.class
 Vista\Registro$7.class
 Vista\Principal$10.class
 Vista\Principal$9.class
@@ -45,6 +46,7 @@ Vista\Registro$5.class
 Modelo\Cliente.class
 Vista\Principal$7.class
 Vista\Principal$32.class
+Vista\Principal$38.class
 Vista\Principal$22.class
 Vista\Login$1.class
 Vista\Principal$15.class
@@ -60,10 +62,12 @@ Vista\Principal$3.class
 Vista\Principal$13.class
 Vista\Registro$1.class
 Vista\Registro$12.class
+Vista\Principal$39.class
 Vista\Principal$6.class
 Vista\Principal$19.class
 Vista\Principal$24.class
 Vista\Registro$4.class
 Modelo\MaterialItem.class
 Vista\Login$7.class
+Vista\Principal$41.class
 Vista\Principal$21.class

@@ -403,58 +403,114 @@ public class Conexion {
         return null;
     }
 
+    // --------------------------CLIENTES------------------------------------
+    
     public boolean registrarCliente(Cliente cliente) {
-        String sql = "INSERT INTO cliente (documento, nombre, telefono, razon_social) VALUES (?, ?, ?, ?)";
-
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, cliente.getDocumento());
-            pstmt.setString(2, cliente.getNombre());
-            pstmt.setString(3, cliente.getTelefono());
-            pstmt.setString(4, cliente.getRazonSocial());
-
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error al registrar el cliente: " + e.getMessage());
-            return false;
-        }
+    if (clienteExiste(cliente.getDocumento())) {
+        System.out.println("El cliente ya está registrado.");
+        return false;
     }
 
+    String sql = "INSERT INTO cliente (documento, nombre, telefono, razon_social) VALUES (?, ?, ?, ?)";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+        pstmt.setString(1, cliente.getDocumento());
+        pstmt.setString(2, cliente.getNombre());
+        pstmt.setString(3, cliente.getTelefono());
+        pstmt.setString(4, cliente.getRazonSocial());
+
+        int rowsAffected = pstmt.executeUpdate();
+        return rowsAffected > 0;
+
+    } catch (SQLException e) {
+        System.out.println("Error al registrar el cliente: " + e.getMessage());
+        return false;
+    }
+}
+    
+    public boolean clienteExiste(String documento) {
+    String sql = "SELECT 1 FROM cliente WHERE documento = ?";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, documento);
+        ResultSet rs = pstmt.executeQuery();
+        return rs.next(); // true si existe
+    } catch (SQLException e) {
+        System.out.println("Error al verificar existencia del cliente: " + e.getMessage());
+        return false;
+    }
+}
+
+    public Cliente consultarCliente(String documento) {
+    String sql = "SELECT * FROM cliente WHERE documento = ?";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, documento);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            return new Cliente(
+                rs.getString("documento"),
+                rs.getString("nombre"),
+                rs.getString("telefono"),
+                rs.getString("razon_social")
+            );
+        } else {
+            System.out.println("El cliente no existe.");
+            return null;
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error al consultar el cliente: " + e.getMessage());
+        return null;
+    }
+}
+
+    
+    
     public boolean actualizarCliente(Cliente cliente) {
-        String sql = "UPDATE cliente SET nombre = ?, telefono = ?, razon_social = ? WHERE documento = ?";
-
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, cliente.getNombre());
-            pstmt.setString(2, cliente.getTelefono());
-            pstmt.setString(3, cliente.getRazonSocial());
-            pstmt.setString(4, cliente.getDocumento());
-
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
-
-        } catch (SQLException e) {
-            System.out.println("Error al actualizar el cliente: " + e.getMessage());
-            return false;
-        }
+    if (!clienteExiste(cliente.getDocumento())) {
+        System.out.println("El cliente no existe, no se puede actualizar.");
+        return false;
     }
 
-    public boolean eliminarCliente(String documento) {
-        String sql = "DELETE FROM cliente WHERE documento = ?";
+    String sql = "UPDATE cliente SET nombre = ?, telefono = ?, razon_social = ? WHERE documento = ?";
 
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, cliente.getNombre());
+        pstmt.setString(2, cliente.getTelefono());
+        pstmt.setString(3, cliente.getRazonSocial());
+        pstmt.setString(4, cliente.getDocumento());
 
-            pstmt.setString(1, documento);
-            int rowsAffected = pstmt.executeUpdate();
-            return rowsAffected > 0;
+        int rowsAffected = pstmt.executeUpdate();
+        return rowsAffected > 0;
 
-        } catch (SQLException e) {
-            System.out.println("Error al eliminar el cliente: " + e.getMessage());
-            return false;
-        }
+    } catch (SQLException e) {
+        System.out.println("Error al actualizar el cliente: " + e.getMessage());
+        return false;
     }
+}
+
+
+   public boolean eliminarCliente(String documento) {
+    if (!clienteExiste(documento)) {
+        System.out.println("El cliente no existe, no se puede eliminar.");
+        return false;
+    }
+
+    String sql = "DELETE FROM cliente WHERE documento = ?";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, documento);
+        int rowsAffected = pstmt.executeUpdate();
+        return rowsAffected > 0;
+    } catch (SQLException e) {
+        System.out.println("Error al eliminar el cliente: " + e.getMessage());
+        return false;
+    }
+}
+
 
     public List<MarcaItem> obtenerTodasLasMarcas() {
         List<MarcaItem> marcas = new ArrayList<>();
