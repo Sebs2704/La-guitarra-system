@@ -7,8 +7,10 @@ Vista\Registro$7.class
 Vista\Principal$10.class
 Vista\Principal$9.class
 Vista\Login$3.class
+Modelo\Venta.class
 Vista\Principal$37.class
 Vista\Principal$27.class
+Vista\Principal$43.class
 Modelo\MarcaItem.class
 Vista\Principal$33.class
 Vista\Registro$11.class
@@ -38,6 +40,7 @@ Vista\Principal$11.class
 Vista\Principal$1.class
 Vista\Principal$4.class
 Vista\Registro$2.class
+Modelo\DetalleVenta.class
 Vista\Principal$12.class
 Vista\Registro$9.class
 Vista\Login$8.class
@@ -48,14 +51,17 @@ Vista\Principal$7.class
 Vista\Principal$32.class
 Vista\Principal$38.class
 Vista\Principal$22.class
+Vista\Principal$42.class
 Vista\Login$1.class
 Vista\Principal$15.class
 Modelo\Persona.class
 Vista\Principal$35.class
 Vista\Principal$25.class
+Vista\Principal$45.class
 Vista\Principal$36.class
 Vista\Principal$16.class
 Modelo\ColorItem.class
+Vista\Principal$44.class
 Vista\Login$4.class
 Vista\Principal$28.class
 Vista\Principal$3.class

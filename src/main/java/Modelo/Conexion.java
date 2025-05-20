@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import java.sql.Timestamp;
 
 public class Conexion {
 
@@ -29,27 +30,33 @@ public class Conexion {
     }
 
     public List<Cliente> obtenerTodosLosClientes() {
-        List<Cliente> clientes = new ArrayList<>();
-        String sql = "SELECT * FROM cliente";
+    List<Cliente> clientes = new ArrayList<>();
+    String sql = "SELECT c.cc, c.numero, c.correo, p.nombre, p.apellido " +
+                 "FROM clientes c " +
+                 "JOIN persona p ON c.id_persona = p.id_persona";
+    
+    try (Connection conn = connect();
+         PreparedStatement pstmt = conn.prepareStatement(sql);
+         ResultSet rs = pstmt.executeQuery()) {
 
-        try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql); ResultSet rs = pstmt.executeQuery()) {
-
-            while (rs.next()) {
-                Cliente cliente = new Cliente(
-                        rs.getString("documento"),
-                        rs.getString("nombre"),
-                        rs.getString("telefono"),
-                        rs.getString("razon_social")
-                );
-                clientes.add(cliente);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error al obtener los clientes: " + e.getMessage());
+        while (rs.next()) {
+            Cliente cliente = new Cliente(
+                rs.getString("cc"),
+                rs.getString("nombre"),
+                rs.getString("apellido"),
+                rs.getString("numero"),
+                rs.getString("correo")
+            );
+            clientes.add(cliente);
         }
 
-        return clientes;
+    } catch (SQLException e) {
+        System.out.println("Error al obtener los clientes: " + e.getMessage());
     }
+
+    return clientes;
+}
+
 
     public List<Producto> obtenerTodosLosProductos() {
         List<Producto> productos = new ArrayList<>();
@@ -405,35 +412,52 @@ public class Conexion {
 
     // --------------------------CLIENTES------------------------------------
     
-    public boolean registrarCliente(Cliente cliente) {
-    if (clienteExiste(cliente.getDocumento())) {
-        System.out.println("El cliente ya está registrado.");
-        return false;
-    }
+   public boolean registrarCliente(Cliente cliente) {
+    String sqlPersona = "INSERT INTO persona (nombre, apellido) VALUES (?, ?) RETURNING id_persona";
+    String sqlCliente = "INSERT INTO clientes (cc, numero, correo, id_persona) VALUES (?, ?, ?, ?)";
 
-    String sql = "INSERT INTO cliente (documento, nombre, telefono, razon_social) VALUES (?, ?, ?, ?)";
+    try (Connection conn = connect();
+         PreparedStatement stmtPersona = conn.prepareStatement(sqlPersona);
+         PreparedStatement stmtCliente = conn.prepareStatement(sqlCliente)) {
 
-    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        conn.setAutoCommit(false); // inicia transacción
 
-        pstmt.setString(1, cliente.getDocumento());
-        pstmt.setString(2, cliente.getNombre());
-        pstmt.setString(3, cliente.getTelefono());
-        pstmt.setString(4, cliente.getRazonSocial());
+        // Insertar en persona
+        stmtPersona.setString(1, cliente.getNombre());
+        stmtPersona.setString(2, cliente.getApellido());
+        ResultSet rs = stmtPersona.executeQuery();
 
-        int rowsAffected = pstmt.executeUpdate();
-        return rowsAffected > 0;
+        int idPersona = -1;
+        if (rs.next()) {
+            idPersona = rs.getInt("id_persona");
+        } else {
+            conn.rollback();
+            return false;
+        }
+
+        // Insertar en clientes
+        stmtCliente.setString(1, cliente.getDocumento()); // cc
+        stmtCliente.setString(2, cliente.getTelefono()); // numero
+        stmtCliente.setString(3, cliente.getCorreo()); // correo
+        stmtCliente.setInt(4, idPersona); // FK
+
+        int filas = stmtCliente.executeUpdate();
+        conn.commit();
+        return filas > 0;
 
     } catch (SQLException e) {
         System.out.println("Error al registrar el cliente: " + e.getMessage());
         return false;
     }
 }
+
+
     
     public boolean clienteExiste(String documento) {
-    String sql = "SELECT 1 FROM cliente WHERE documento = ?";
+    String sql = "SELECT 1 FROM clientes WHERE cc = ?";
 
     try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setString(1, documento);
+        pstmt.setString(1, documento); // ahora usa setString
         ResultSet rs = pstmt.executeQuery();
         return rs.next(); // true si existe
     } catch (SQLException e) {
@@ -442,19 +466,26 @@ public class Conexion {
     }
 }
 
-    public Cliente consultarCliente(String documento) {
-    String sql = "SELECT * FROM cliente WHERE documento = ?";
+
+   public Cliente consultarCliente(String documento) {
+    String sql = "SELECT c.cc, c.numero, c.correo, c.id_persona, p.nombre, p.apellido " +
+                 "FROM clientes c " +
+                 "JOIN persona p ON c.id_persona = p.id_persona " +
+                 "WHERE c.cc = ?";
 
     try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setString(1, documento);
+        pstmt.setString(1, documento); // ← ahora es String
+
         ResultSet rs = pstmt.executeQuery();
 
         if (rs.next()) {
             return new Cliente(
-                rs.getString("documento"),
+                rs.getString("cc"),
                 rs.getString("nombre"),
-                rs.getString("telefono"),
-                rs.getString("razon_social")
+                rs.getString("apellido"),
+                rs.getString("numero"),
+                rs.getString("correo"),
+                rs.getInt("id_persona")
             );
         } else {
             System.out.println("El cliente no existe.");
@@ -467,6 +498,8 @@ public class Conexion {
     }
 }
 
+
+
     
     
     public boolean actualizarCliente(Cliente cliente) {
@@ -475,16 +508,30 @@ public class Conexion {
         return false;
     }
 
-    String sql = "UPDATE cliente SET nombre = ?, telefono = ?, razon_social = ? WHERE documento = ?";
+    String sqlCliente = "UPDATE clientes SET numero = ?, correo = ? WHERE cc = ?";
+    String sqlPersona = "UPDATE persona SET nombre = ?, apellido = ? WHERE id_persona = ?";
 
-    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setString(1, cliente.getNombre());
-        pstmt.setString(2, cliente.getTelefono());
-        pstmt.setString(3, cliente.getRazonSocial());
-        pstmt.setString(4, cliente.getDocumento());
+    try (Connection conn = connect()) {
+        conn.setAutoCommit(false); // Iniciar transacción
 
-        int rowsAffected = pstmt.executeUpdate();
-        return rowsAffected > 0;
+        // Actualizar tabla 'clientes'
+        try (PreparedStatement pstmtCliente = conn.prepareStatement(sqlCliente)) {
+            pstmtCliente.setString(1, cliente.getTelefono());
+            pstmtCliente.setString(2, cliente.getCorreo());
+            pstmtCliente.setString(3, cliente.getDocumento());
+            pstmtCliente.executeUpdate();
+        }
+
+        // Actualizar tabla 'persona'
+        try (PreparedStatement pstmtPersona = conn.prepareStatement(sqlPersona)) {
+            pstmtPersona.setString(1, cliente.getNombre());
+            pstmtPersona.setString(2, cliente.getApellido());
+            pstmtPersona.setInt(3, cliente.getIdPersona());
+            pstmtPersona.executeUpdate();
+        }
+
+        conn.commit(); // Confirmar cambios
+        return true;
 
     } catch (SQLException e) {
         System.out.println("Error al actualizar el cliente: " + e.getMessage());
@@ -493,16 +540,19 @@ public class Conexion {
 }
 
 
+
+
+
    public boolean eliminarCliente(String documento) {
     if (!clienteExiste(documento)) {
         System.out.println("El cliente no existe, no se puede eliminar.");
         return false;
     }
 
-    String sql = "DELETE FROM cliente WHERE documento = ?";
+    String sql = "DELETE FROM clientes WHERE cc = ?";
 
     try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
-        pstmt.setString(1, documento);
+        pstmt.setString(1, documento);  // ← usamos setInt
         int rowsAffected = pstmt.executeUpdate();
         return rowsAffected > 0;
     } catch (SQLException e) {
@@ -510,7 +560,173 @@ public class Conexion {
         return false;
     }
 }
+   
+   public int registrarPersona(String nombre, String apellido) {
+    String sql = "INSERT INTO persona (nombre, apellido) VALUES (?, ?) RETURNING id_persona";
 
+    try (Connection conn = connect();
+         PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+        stmt.setString(1, nombre);
+        stmt.setString(2, apellido);
+
+        ResultSet rs = stmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("id_persona");  // Retorna el ID de la persona recién insertada
+        } else {
+            System.out.println("No se pudo obtener el ID de la persona registrada.");
+            return -1;
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error al registrar la persona: " + e.getMessage());
+        return -1;
+    }
+}
+   
+   public int obtenerIdClientePorDocumento(String cc) {
+    String sql = "SELECT id FROM clientes WHERE cc = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, cc);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("id");
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al obtener ID del cliente: " + e.getMessage());
+    }
+    return -1; // ID inválido
+}
+
+//------------------------------------fin clientes-------------------------------------//
+   
+   
+   //------------------------------------VENTAS-------------------------------------//
+   public int registrarVenta(Venta venta) {
+    String sql = "INSERT INTO ventas (customer_id, total_amount, sale_date) VALUES (?, ?, ?) RETURNING id";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, venta.getIdCliente());
+        pstmt.setDouble(2, venta.getTotal());
+        pstmt.setTimestamp(3, Timestamp.valueOf(venta.getFechaVenta()));
+
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            return rs.getInt("id");
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al registrar la venta: " + e.getMessage());
+    }
+
+    return -1;
+}
+
+   public boolean registrarDetalleVenta(int idVenta, DetalleVenta detalle) {
+    String sql = "INSERT INTO productos_vendidos (sale_id, product_id, quantity, unit_price, subtotal) VALUES (?, ?, ?, ?, ?)";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, idVenta);
+        pstmt.setInt(2, detalle.getIdProducto());
+        pstmt.setInt(3, detalle.getCantidad());
+        pstmt.setDouble(4, detalle.getPrecioUnitario());
+        pstmt.setDouble(5, detalle.getSubtotal());
+
+        return pstmt.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+        System.out.println("Error al registrar detalle de venta: " + e.getMessage());
+        return false;
+    }
+}
+
+  public boolean descontarStock(int codigoProducto, int cantidadVendida) {
+    String sql = "UPDATE producto SET cantidad = cantidad - ? WHERE codigo = ?";
+    
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setInt(1, cantidadVendida);
+        pstmt.setInt(2, codigoProducto);
+
+        int filasAfectadas = pstmt.executeUpdate();
+        return filasAfectadas > 0;
+    } catch (SQLException e) {
+        System.out.println("Error al descontar stock: " + e.getMessage());
+        return false;
+    }
+}
+
+
+   public Producto buscarProductoPorNombre(String nombre) {
+    String sql = "SELECT * FROM producto WHERE nombre = ?";
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, nombre);
+        ResultSet rs = pstmt.executeQuery();
+        if (rs.next()) {
+            // Completa con los datos que ya usas en tu constructor Producto
+            return new Producto(
+                rs.getInt("codigo"),
+                rs.getString("descripcion"),
+                rs.getInt("precio"),
+                rs.getInt("cantidad"),
+                null, null, rs.getString("nombre"), null
+            );
+        }
+    } catch (SQLException e) {
+        System.out.println("Error al buscar producto por nombre: " + e.getMessage());
+    }
+    return null;
+}
+   
+   public Producto consultarProductoPorNombre(String nombre) {
+    String sql = "SELECT p.codigo, p.descripcion, p.precio, p.cantidad, " +
+                 "p.material, p.marca, p.nombre AS nombre_producto, p.color, " +
+                 "m.id_marca, m.nombre AS marca_nombre, " +
+                 "mat.id_material, mat.nombre AS material_nombre, " +
+                 "c.id_color, c.nombre AS color_nombre " +
+                 "FROM producto p " +
+                 "LEFT JOIN marca m ON p.marca = m.id_marca " +
+                 "LEFT JOIN material mat ON p.material = mat.id_material " +
+                 "LEFT JOIN color c ON p.color = c.id_color " +
+                 "WHERE LOWER(p.nombre) = LOWER(?)";
+
+    try (Connection conn = connect(); PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        pstmt.setString(1, nombre);
+        ResultSet rs = pstmt.executeQuery();
+
+        if (rs.next()) {
+            int codigo = rs.getInt("codigo");
+            String descripcion = rs.getString("descripcion");
+            int precio = rs.getInt("precio");
+            int cantidad = rs.getInt("cantidad");
+            int materialId = rs.getInt("id_material");
+            String materialNombre = rs.getString("material_nombre");
+            int marcaId = rs.getInt("id_marca");
+            String marcaNombre = rs.getString("marca_nombre");
+            int colorId = rs.getInt("id_color");
+            String colorNombre = rs.getString("color_nombre");
+            String nombreProducto = rs.getString("nombre_producto");
+
+            MaterialItem material = new MaterialItem(materialId, materialNombre);
+            MarcaItem marca = new MarcaItem(marcaId, marcaNombre);
+            ColorItem color = new ColorItem(colorId, colorNombre);
+
+            return new Producto(codigo, descripcion, precio, cantidad, material, marca, nombreProducto, color);
+        }
+
+    } catch (SQLException e) {
+        System.out.println("Error al consultar producto por nombre: " + e.getMessage());
+    }
+
+    return null;
+}
+
+
+   
+   
+   
+   
+   
+   
+   //------------------------------------FIN VENTAS-------------------------------------
 
     public List<MarcaItem> obtenerTodasLasMarcas() {
         List<MarcaItem> marcas = new ArrayList<>();
@@ -693,5 +909,8 @@ public boolean materialEstaEnUso(int idMaterial) {
     }
     return false;
     }  
+
+
+
 }
 
